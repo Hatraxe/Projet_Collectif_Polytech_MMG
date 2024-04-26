@@ -75,3 +75,4 @@ CMakeLists.txt.user*
 # je teste d'ajouter des choses
 
 venv
+*.user
