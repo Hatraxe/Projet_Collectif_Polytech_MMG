@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% load static %}
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graphiques</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+        <a href="/home/" class="button">Données</a>
+        <a href="/graphiques/" class="button">Graphiques</a>
+        <a href="/indicators/" class="button">Indicateurs</a>
+        <a href="/dashboard/" class="button">Tableau de bord</a>
+    </header>
+    <div class="main-content">
+        <div id="popupExportDashboard" class="popup">Export du tableau de bord effectué avec succès !</div>
+        <div id="popupReinitializeDashboard" class="popup">Réinitialiser avec succès !</div>
+        <div class="graph-container">
+    <h2>Frame</h2>
+    <div class="grid-container">
+        <!-- Première image -->
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <!-- Dupliquez cette structure pour chaque image supplémentaire -->
+        <!-- Par exemple, pour une deuxième image -->
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <!-- Dupliquez cette structure pour chaque image supplémentaire -->
+        <!-- Par exemple, pour une troisième image -->
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <!-- Dupliquez cette structure pour chaque image supplémentaire -->
+        <!-- Par exemple, pour une quatrième image -->
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <!-- Répétez cette structure pour chaque image supplémentaire -->
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+        <div class="grid-item">
+            <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 100%; height: auto;">
+            <div class="legend">
+                <span style="color: #005792;">● 10</span>
+                <span style="color: #0086ad;">● 20</span>
+                <span style="color: #00b2d6;">● 30</span>
+                <span style="color: #00d7f3;">● 40</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+    <footer>
+        <div class="controls">
+            <label>
+                <select class="choice-box">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                </select>
+            </label>
+            <button id="reinitialiseButton" class="button">Réinitialiser</button>
+            <button id="exportDashboardButton" class="button">Exporter le tableau de bord</button>
+        </div>
+        <div id="exportDashboardModal" class="modal">
+            <div class="modal-content">
+                <span class="closeDashboardExport">&times;</span>
+                <h2>Exporter le tableau de bord</h2>
+                <p>Choisissez le format de fichier :</p>
+                <select id="fileFormatSelectorDashboard">
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                    <option value="svg">SVG</option>
+                </select>
+                <button id="exportPopUpDashboardButton" onclick="startDashboardExport()">Exporter Maintenant</button>
+            </div>
+        </div>
+
+    </footer>
+
+<script src="{% static 'js/dashboardScript.js' %}"></script>
+</body>
+</html>
