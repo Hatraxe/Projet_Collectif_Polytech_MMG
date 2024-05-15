@@ -33,35 +33,12 @@
                 <tr>
                     {% for cell in row %}
                         <td>
-                            {% if cell == 'nan' %}
-
-                            {% else %}
-                                {{cell}}
-                            {% endif  %}
-
+                            {{cell}}
                         </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
-</table>
-{#    <table border="1">#}
-{#        <thead>#}
-{#            <tr>#}
-{#                {% for header in data %}#}
-{#                    <th>{{ header }}</th>#}
-{#                {% endfor %}#}
-{#            </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#            {% for row in data|slice:"1:" %}#}
-{#                <tr>#}
-{#                    {% for cell in row %}#}
-{#                        <td>{{ cell }}</td>#}
-{#                    {% endfor %}#}
-{#                </tr>#}
-{#            {% endfor %}#}
-{#        </tbody>#}
-{#    </table>#}
+    </table>
 
 
 {#    <py-script>#}

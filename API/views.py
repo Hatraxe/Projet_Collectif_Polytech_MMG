@@ -11,7 +11,7 @@ def home(request):
     # print(request.POST.get("file"))
     path = 'API/asset/export_rdv_2023-10-01-2023-12-31.csv'
     data = pandas.read_csv(path, sep=";")
-    data = data.fillna("")
+    data = data.fillna("") # remove "nan"
     # print(data.fillna(0))
     return render(request, 'home.html', {'data': data})
     # return HttpResponse(data.to_html())
