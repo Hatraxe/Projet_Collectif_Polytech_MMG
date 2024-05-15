@@ -22,22 +22,27 @@
     <div id="popupDeleteData" class="popup">Suppression des données réussis !</div>
 
     <table>
-  <tr>
-    {% for col in data.columns %}
-      <td>
-        {{col}}
-      </td>
-    {% endfor %}
-  </tr>
-    {% for index, row in data.iterrows %}
-      <tr>
-        {% for cell in row %}
-          <td>
-            {{cell}}
-          </td>
-        {% endfor %}
-      </tr>
-    {% endfor %}
+        <tr>
+            {% for col in data.columns %}
+                <td>
+                    {{col}}
+                </td>
+            {% endfor %}
+        </tr>
+            {% for index, row in data.iterrows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>
+                            {% if cell == 'nan' %}
+
+                            {% else %}
+                                {{cell}}
+                            {% endif  %}
+
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
 </table>
 {#    <table border="1">#}
 {#        <thead>#}
