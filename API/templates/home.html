@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Données</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env> - pandas </py-env>
 </head>
 <body>
 <header>
@@ -17,28 +20,23 @@
 <div class="main-content">
     <div id="popupImportData" class="popup">Importation des données réussis !</div>
     <div id="popupDeleteData" class="popup">Suppression des données réussis !</div>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>A</th>
-            <th>B</th>
-            <th>C</th>
-            <th>D</th>
-            <th>E</th>
-            <th>F</th>
-            <th>G</th>
-        </tr>
-        <tr>
-            <td>Ligne 1</td>
-            <td>Donnée 1A</td>
-            <td>Donnée 1B</td>
-            <td>Donnée 1C</td>
-            <td>Donnée 1D</td>
-            <td>Donnée 1E</td>
-            <td>Donnée 1F</td>
-            <td>Donnée 1G</td>
-        </tr>
-    </table>
+    <py-script>
+import pandas as pd
+
+columns = ['age', 'week', 'opp', 'ACscr', 'OPPscr', 'location']
+df = pd.read_csv('Crushers.csv', names=columns)
+
+# This you can change it to whatever you want to get
+age_15 = df[df['age'] == 'U15']
+# Other examples:
+bye = df[df['opp'] == 'Bye']
+crushed_team = df[df['ACscr'] == '0']
+crushed_visitor = df[df['OPPscr'] == '0']
+# Play with this
+
+# Use the .to_html() to get your table in html
+print(crushed_visitor.to_html())
+    </py-script>
 </div>
 <footer>
     <button id="importButton" class="button">Importer</button>
