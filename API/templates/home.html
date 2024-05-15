@@ -7,8 +7,8 @@
 <title>Données</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-    <py-env> - pandas </py-env>
+{#    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>#}
+{#    <py-env> - pandas </py-env>#}
 </head>
 <body>
 <header>
@@ -20,23 +20,62 @@
 <div class="main-content">
     <div id="popupImportData" class="popup">Importation des données réussis !</div>
     <div id="popupDeleteData" class="popup">Suppression des données réussis !</div>
-    <py-script>
-import pandas as pd
 
-columns = ['age', 'week', 'opp', 'ACscr', 'OPPscr', 'location']
-df = pd.read_csv('Crushers.csv', names=columns)
+    <table>
+  <tr>
+    {% for col in data.columns %}
+      <td>
+        {{col}}
+      </td>
+    {% endfor %}
+  </tr>
+    {% for index, row in data.iterrows %}
+      <tr>
+        {% for cell in row %}
+          <td>
+            {{cell}}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+</table>
+{#    <table border="1">#}
+{#        <thead>#}
+{#            <tr>#}
+{#                {% for header in data %}#}
+{#                    <th>{{ header }}</th>#}
+{#                {% endfor %}#}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#            {% for row in data|slice:"1:" %}#}
+{#                <tr>#}
+{#                    {% for cell in row %}#}
+{#                        <td>{{ cell }}</td>#}
+{#                    {% endfor %}#}
+{#                </tr>#}
+{#            {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
 
-# This you can change it to whatever you want to get
-age_15 = df[df['age'] == 'U15']
-# Other examples:
-bye = df[df['opp'] == 'Bye']
-crushed_team = df[df['ACscr'] == '0']
-crushed_visitor = df[df['OPPscr'] == '0']
-# Play with this
 
-# Use the .to_html() to get your table in html
-print(crushed_visitor.to_html())
-    </py-script>
+{#    <py-script>#}
+{#import pandas as pd#}
+{##}
+{#columns = ['age', 'week', 'opp', 'ACscr', 'OPPscr', 'location']#}
+{#df = pd.read_csv('Crushers.csv', names=columns)#}
+{##}
+{## This you can change it to whatever you want to get#}
+{#age_15 = df[df['age'] == 'U15']#}
+{## Other examples:#}
+{#bye = df[df['opp'] == 'Bye']#}
+{#crushed_team = df[df['ACscr'] == '0']#}
+{#crushed_visitor = df[df['OPPscr'] == '0']#}
+{## Play with this#}
+{##}
+{## Use the .to_html() to get your table in html#}
+{#print(crushed_visitor.to_html())#}
+{#    </py-script>#}
 </div>
 <footer>
     <button id="importButton" class="button">Importer</button>
@@ -60,11 +99,12 @@ print(crushed_visitor.to_html())
     <div class="modal-content">
         <span class="close">&times</span>
         <h2>Importer un fichier</h2>
+
         <!-- Formulaire d'importation de fichier -->
         <form action="/home/" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="file" name="file" id="file" accept=".csv" required>
-
+{#            <input type="test" name="test" id="test" required>#}
             <button id="importDataButton" type="submit">Importer</button>
         </form>
     </div>
