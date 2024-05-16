@@ -1,6 +1,14 @@
-from API import import_csv
 import pandas
+
+from API import import_csv
+
 data = []
+
+
+def error(e):
+    global data
+    print(format(e))
+    data = []
 
 
 def home(request):
@@ -14,23 +22,24 @@ def home(request):
             data = import_csv.csv_to_sqlite(data)
         except pandas.errors.EmptyDataError as e:
             print("Empty file")
+            error(e)
             # bad csv file do something
         except pandas.errors.DtypeWarning as e:
             print("Bad Data")
+            error(e)
         except UnicodeDecodeError as e:
             print("Bad file")
+            error(e)
+        except pandas.errors.DatabaseError as e:
+            print("Error when writing db.sqlite file")
+            error(e)
         except Exception as e:
-            print(e.__class__)
-            print(format(e))
-
-
+            error(e)
 
     if len(data) == 0:
         return render(request, 'home.html')
     else:
         return render(request, 'home.html', {'data': data})
-
-
 
 
 def about(request):
