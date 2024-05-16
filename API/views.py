@@ -7,11 +7,29 @@ def home(request):
     global data
 
     if request.method == 'POST':
-        data = pandas.read_csv(request.FILES['file'], sep=";")
-        data = import_csv.csv_to_sqlite(data)
-        return render(request, 'home.html', {'data': data})
-    else:
+        try:
+            data = pandas.read_csv(request.FILES['file'], sep=";")
+            if len(data) == 0:
+                raise Exception("Only header in csv file")
+            data = import_csv.csv_to_sqlite(data)
+        except pandas.errors.EmptyDataError as e:
+            print("Empty file")
+            # bad csv file do something
+        except pandas.errors.DtypeWarning as e:
+            print("Bad Data")
+        except UnicodeDecodeError as e:
+            print("Bad file")
+        except Exception as e:
+            print(e.__class__)
+            print(format(e))
+
+
+
+    if len(data) == 0:
         return render(request, 'home.html')
+    else:
+        return render(request, 'home.html', {'data': data})
+
 
 
 

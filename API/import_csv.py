@@ -10,8 +10,9 @@ def csv_to_sqlite(data):
     return data
 
 
+# Remove unexpect data in csv file like rest
 def clear_csv(data):
-    rows_to_remove = ["P", "pause", "p"]
+    rows_to_remove = ["pause", "Pause", "PAUSE", "p", "P", "Non", "J'aime pas les gens", "Oui"]
     for i in range(len(rows_to_remove)):
         data = data.drop(data[(data.Notes == rows_to_remove[i])].index)
     return data
