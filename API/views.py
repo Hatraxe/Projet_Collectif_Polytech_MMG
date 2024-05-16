@@ -1,13 +1,18 @@
 from API import import_csv
-
+import pandas
 data = []
 
 
 def home(request):
     global data
 
-    data = import_csv.csv_to_sqlite("API/asset/export_rdv_2023-10-01-2023-12-31.csv")
-    return render(request, 'home.html', {'data': data})
+    if request.method == 'POST':
+        data = pandas.read_csv(request.FILES['file'], sep=";")
+        data = import_csv.csv_to_sqlite(data)
+        return render(request, 'home.html', {'data': data})
+    else:
+        return render(request, 'home.html')
+
 
 
 def about(request):
