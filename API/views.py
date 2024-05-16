@@ -1,26 +1,13 @@
-import csv
-import pandas
-from django.http import HttpResponse
+from API import import_csv
 
-from django.shortcuts import render
+data = []
 
 
 def home(request):
     global data
 
-    # print(request.POST.get("file"))
-    path = 'API/asset/export_rdv_2023-10-01-2023-12-31.csv'
-    data = pandas.read_csv(path, sep=";")
-    data = data.fillna("") # remove "nan"
-    # print(data.fillna(0))
+    data = import_csv.csv_to_sqlite("API/asset/export_rdv_2023-10-01-2023-12-31.csv")
     return render(request, 'home.html', {'data': data})
-    # return HttpResponse(data.to_html())
-
-    # if 'data' in vars():
-    #     print("OK")
-    #     return render(request, 'home.html', {'data': data})
-    # else:
-    #     return render(request, 'home.html')
 
 
 def about(request):
