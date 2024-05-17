@@ -1,4 +1,5 @@
 import pandas
+import sqlite3
 
 from API import import_csv
 
@@ -10,6 +11,7 @@ def home(request):
 
     if request.method == 'POST':
         if hasattr(request.POST, 'delete'):
+            sqlite3.connect("db.sqlite")
             data = []
         else:
             try:
