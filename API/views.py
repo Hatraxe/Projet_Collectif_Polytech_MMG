@@ -39,7 +39,6 @@ def home(request):
             except Exception as e:
                 print(format(e))
                 data = []
-
     if len(data) == 0:
         return render(request, 'home.html')
     else:

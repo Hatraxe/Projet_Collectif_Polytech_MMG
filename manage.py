@@ -13,9 +13,11 @@ def main():
     # Démarrer le serveur Django
     Timer(1.5, open_browser).start()
     execute_from_command_line(['manage.py', 'runserver', '127.0.0.1:8080'])
+    execute_from_command_line(['manage.py', 'runserver', '127.0.0.1:8080'])
     # Ajustez cette ligne dans votre script Python
     execute_from_command_line(['manage.py', 'runserver', '8080'])
 
 
 if __name__ == "__main__":
     main()
+

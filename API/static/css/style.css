@@ -86,6 +86,10 @@ table {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
 }
 
+table thead{
+    font-weight: bold;
+}
+
 th, td {
     border: 1px solid #ddd;
     padding: 8px;

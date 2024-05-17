@@ -22,6 +22,7 @@
     <div id="popupDeleteData" class="popup">Suppression des données !</div>
 
     <table>
+    <thead>
         <tr>
             {% for col in data.columns %}
                 <td>
@@ -29,6 +30,8 @@
                 </td>
             {% endfor %}
         </tr>
+        </thead>
+        <tbody>
         {% for index, row in data.iterrows %}
             <tr>
                 {% for cell in row %}
@@ -38,6 +41,7 @@
                 {% endfor %}
             </tr>
         {% endfor %}
+    <tbody>
     </table>
 
 
