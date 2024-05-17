@@ -60,10 +60,15 @@
 {#    </py-script>#}
 </div>
 <footer>
-    <button id="importButton" class="button">Importer</button>
-    <button id="deleteDataButton" class="button">Supprimer</button>
-    <button id="exportButton" class="button">Exporter</button>
-
+    <div class="footer-import">
+        <button id="importButton" class="button" >Importer</button>
+        <form action="/home/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="checkbox" id="delete" name="delete" value="true" style="display: none">
+            <button id="deleteDataButton" class="button" type="submit">Supprimer</button>
+        </form>
+        <button id="exportButton" class="button">Exporter</button>
+    </div>
     <div id="exportModal" class="modal">
         <div class="modal-content">
             <span class="closeExport">&times</span>

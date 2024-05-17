@@ -48,6 +48,7 @@ deleteDataButton.onclick = function() {
     setTimeout(function() {
         popupDeleteData.style.display = 'none';
     }, 1500); // Disparaît après 3 secondes
+
 };
 
 var importDataButton = document.getElementById('importDataButton');
