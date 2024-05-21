@@ -86,6 +86,10 @@ table {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
 }
 
+table thead{
+    font-weight: bold;
+}
+
 th, td {
     border: 1px solid #ddd;
     padding: 8px;
@@ -98,6 +102,9 @@ th {
 
 /* Footer avec les contrôles */
 footer {
+    justify-content: center;
+    display: flex;
+    align-items: center;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -105,6 +112,12 @@ footer {
     text-align: center;
     background-color: #f0f0f0;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.footer-import {
+    align-self: center;
+    display: flex;
+    align-items: center;
 }
 
 .controls {
