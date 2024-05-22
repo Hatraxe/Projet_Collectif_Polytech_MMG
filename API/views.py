@@ -12,7 +12,7 @@ def home(request):
     if request.method == 'POST':
         # param = request.POST.get("delete")
         if request.POST.get("delete") == "true":
-            data=[]
+            data = []
             sqlite3.connect("db.sqlite")
 
         else:
@@ -45,7 +45,11 @@ def home(request):
     if len(data) == 0:
         return render(request, 'home.html')
     else:
-        return render(request, 'home.html', {'data': data})
+        data_filter = data
+        #use data_filter to apply filters (with import_csv.clean)
+        filters = ["pause", "Pause", "PAUSE", "p", "P", "Non", "J'aime pas les gens", "Oui"]
+        data_filter = import_csv.clear_csv(data_filter, filters)
+        return render(request, 'home.html', {'data': data_filter})
 
 
 def about(request):
