@@ -1,7 +1,9 @@
 import pandas
 import sqlite3
+from django import forms
 
 from API import import_csv
+from API import export
 
 data = []
 
@@ -10,9 +12,15 @@ def home(request):
     global data
 
     if request.method == 'POST':
-        if hasattr(request.POST, 'delete'):
-            sqlite3.connect("db.sqlite")
+        if request.POST.get("delete") == "true":
+            conn = sqlite3.connect("db.sqlite")
+            cur = conn.cursor()
+            cur.execute("DROP TABLE IF EXISTS csv_data")
+            cur.execute("CREATE TABLE IF NOT EXISTS csv_data(temp integer);")
+            conn.close()
             data = []
+        elif request.POST.get("export_home") == "true":
+            export.make_csv()
         else:
             try:
                 data = pandas.read_csv(request.FILES['file'], sep=";")
