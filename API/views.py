@@ -10,10 +10,13 @@ def home(request):
     global data
 
     if request.method == 'POST':
-        if hasattr(request.POST, 'delete'):
+        # param = request.POST.get("delete")
+        if request.POST.get("delete") == "true":
+            data=[]
             sqlite3.connect("db.sqlite")
-            data = []
+
         else:
+
             try:
                 data = pandas.read_csv(request.FILES['file'], sep=";")
                 if len(data) == 0:
