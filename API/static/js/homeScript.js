@@ -64,12 +64,12 @@ importDataButton.onclick = function() {
 
 
 var exportDataButton = document.getElementById('exportDataButton');
-var popupDeleteData = document.getElementById('popupDeleteData');
+var popupExportData = document.getElementById('popupExportData');
 
 exportDataButton.onclick = function() {
-    popupDeleteData.style.display = 'block';
+    popupExportData.style.display = 'block';
     setTimeout(function() {
-        popupDeleteData.style.display = 'none';
+        popupExportData.style.display = 'none';
     }, 1500); // Disparaît après 3 secondes
 };
 
