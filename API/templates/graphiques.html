@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Graphiques</title>
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <header>
@@ -29,6 +30,9 @@
         <span style="color: #00b2d6;">● 30</span>
         <span style="color: #00d7f3;">● 40</span>
     </div>
+    <div id="graph-container">
+        <img id="graph-img" src="" alt="Graph Image">
+    </div>
 </div>
     </div>
     <footer>
@@ -44,6 +48,8 @@
             <button id="exportGraphButton" class="button">Exporter</button>
             <button id="addGraphToDashboard" class="button">Ajouter au tableau de bord</button>
         </div>
+         <button id="generate-graph-btn">Generate Graph</button>
+            
         <div id="exportGraphModal" class="modal">
             <div class="modal-content">
                 <span class="closeGraphExport">&times;</span>
@@ -60,5 +66,15 @@
     </footer>
 
 <script src="{% static 'js/graphScript.js' %}"></script>
+<script>
+        $(document).ready(function() {
+            console.log("Document is ready");
+            $('#generate-graph-btn').click(function() {
+                console.log("Button clicked");
+                $('#graph-img').attr('src', '/generate-graph/?' + new Date().getTime());
+                $('#graph-container').show();
+            });
+        });
+    </script>
 </body>
 </html>

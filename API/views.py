@@ -1,6 +1,14 @@
+from datetime import datetime
+from io import BytesIO
+import os
+from django.http import HttpResponse
 import pandas
 import sqlite3
 from django import forms
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('agg')
+import pandas as pd
 
 from API import import_csv
 from API import export
@@ -71,6 +79,68 @@ def indicators(request):
 
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+def get_db_connection():
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    db_path = os.path.join(base_dir, 'db.sqlite')
+    return sqlite3.connect(db_path)
+
+def generate_graph_age(request):
+    
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+    df = pd.read_sql_query('SELECT "Date de naissance" FROM '+str(table_name), connection)
+    df = df.copy()
+
+    #calculate age of each person
+    today_str = datetime.today().strftime('%d%m%y')
+    today = pd.to_datetime(today_str, format='%d%m%y')
+    df['Date de naissance'] = pd.to_datetime(df['Date de naissance'], format='%d/%m/%Y')
+    df['Age'] = df['Date de naissance'].apply(lambda x: today.year - x.year - ((today.month, today.day) < (x.month, x.day)))
+    
+    bins = [0, 6, 15.25, float('inf')]
+    labels = ['Younger than 6', '6 to 15 years and 3 months', 'Adult']
+    
+    df['Age Group'] = pd.cut(df['Age'], bins=bins, labels=labels, right=True, include_lowest=True)
+    df['Age Group'] = pd.Categorical(df['Age Group'], categories=labels, ordered=True)
+
+    age_group_counts = df['Age Group'].value_counts().sort_index()
+
+    plt.figure(figsize=(8, 8))
+    plt.pie(age_group_counts, labels=age_group_counts.index, autopct='%1.1f%%')
+    plt.title('Age Group')
+    plt.axis('equal')
+    
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    plt.close()
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='image/png')
+
+    
+    """
+    x = [1, 2, 3, 4, 5]
+    y = [10, 20, 30, 40, 50]
+
+    # Generate the plot
+    plt.plot(x, y)
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.title('Dummy Graph')
+
+    # Save the plot to a BytesIO buffer
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    plt.close()
+
+    # Return the image as an HTTP response
+    buffer.seek(0)
+    return HttpResponse(buffer.getvalue(), content_type='image/png')
+    """
 
 
 from django.shortcuts import render

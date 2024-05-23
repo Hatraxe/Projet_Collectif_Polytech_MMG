@@ -8,5 +8,6 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('graphiques/', views.graphiques, name='graphiques'),
     path('indicators/', views.indicators, name='indicators'),
-    path('dashboard/', views.dashboard, name='dashboard')
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('generate-graph/', views.generate_graph_age, name='generate_graph')
 ]
