@@ -20,36 +20,26 @@
         <div id="popupAddGraphToDashboard" class="popup">Graphique ajouté au tableau de bord avec succès !</div>
         <div id="popupGenerateGraph" class="popup">Graphique générées avec succès !</div>
         <div class="graph-container">
-    <h2>Frame</h2>
-    <!-- Ici, vous pouvez intégrer vos graphiques dynamiques ou des images de graphiques -->
-    <img src="{% static '/image/Exemple_Graphique.png' %}" alt="Graphique" style="max-width: 80%; height: auto;">
-    <!-- Mettre à jour le chemin vers l'image du graphique ci-dessus -->
-    <div class="legend">
-        <span style="color: #005792;">● 10</span>
-        <span style="color: #0086ad;">● 20</span>
-        <span style="color: #00b2d6;">● 30</span>
-        <span style="color: #00d7f3;">● 40</span>
-    </div>
+    <h2>Graphiques</h2>
     <div id="graph-container">
-        <img id="graph-img" src="" alt="Graph Image">
+        <img id="graph-img" src="">
     </div>
 </div>
     </div>
     <footer>
         <div class="controls">
             <label>
-                <select class="choice-box">
-                    <option>Option 1</option>
-                    <option>Option 2</option>
-                    <option>Option 3</option>
+                <select class="choice-box", id="choiceBox">
+                    <option value="age">Age</option>
+                    <option value="creepar">Créé par</option>
+                    <option value='RDVs'>RDVs</option>
+                    <option value='RDVshonored'>RDVs honored</option>
                 </select>
             </label>
             <button id="generateGraphButton" class="button">Générer</button>
             <button id="exportGraphButton" class="button">Exporter</button>
             <button id="addGraphToDashboard" class="button">Ajouter au tableau de bord</button>
-        </div>
-         <button id="generate-graph-btn">Generate Graph</button>
-            
+        </div>            
         <div id="exportGraphModal" class="modal">
             <div class="modal-content">
                 <span class="closeGraphExport">&times;</span>
@@ -66,15 +56,31 @@
     </footer>
 
 <script src="{% static 'js/graphScript.js' %}"></script>
+
 <script>
-        $(document).ready(function() {
-            console.log("Document is ready");
-            $('#generate-graph-btn').click(function() {
-                console.log("Button clicked");
-                $('#graph-img').attr('src', '/generate-graph/?' + new Date().getTime());
+    $(document).ready(function() {
+        console.log("Document is ready");
+        $('#generateGraphButton').click(function() {
+            console.log("Generate button clicked");
+            // Check if 'Age' is selected in the dropdown
+            if ($('#choiceBox').val() === 'age') {
+                $('#graph-img').attr('src', '/generate-graph-age/?' + new Date().getTime());
                 $('#graph-container').show();
-            });
+            } else if ($('#choiceBox').val() === 'creepar') {
+                $('#graph-img').attr('src', '/generate-graph-cree-par/?' + new Date().getTime());
+                $('#graph-container').show();
+            } else if ($('#choiceBox').val() === 'RDVs') {
+                $('#graph-img').attr('src', '/generate-graph-RDVs/?' + new Date().getTime());
+                $('#graph-container').show();
+            } else if ($('#choiceBox').val() === 'RDVshonored') {
+                $('#graph-img').attr('src', '/generate-graph-RDVs-honored/?' + new Date().getTime());
+                $('#graph-container').show();
+            } 
+            else {
+                console.log("Option not selected.");
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>

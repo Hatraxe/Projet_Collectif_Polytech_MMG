@@ -9,5 +9,9 @@ urlpatterns = [
     path('graphiques/', views.graphiques, name='graphiques'),
     path('indicators/', views.indicators, name='indicators'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('generate-graph/', views.generate_graph_age, name='generate_graph')
+    path('generate-graph-age/', views.generate_graph_age, name='generate_graph_age'),
+    path('generate-graph-cree-par/', views.generate_graph_cree_par, name='generate_graph_cree_par'),
+    path('generate-graph-RDVs/', views.generate_graph_RDVs, name='generate_graph_RDVs'),
+    path('generate-graph-RDVs-honored/', views.generate_graph_RDVs_honored, name='generate_graph_RDVs_honored')
+
 ]
