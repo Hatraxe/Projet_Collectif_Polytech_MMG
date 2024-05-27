@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date, timedelta, datetime
+from dateutil import easter
 from io import BytesIO
 import os
 from django.http import HttpResponse
@@ -80,11 +81,52 @@ def indicators(request):
 def dashboard(request):
     return render(request, 'dashboard.html')
 
+#Get connection to the database
+#Obtenir une connexion à la base de données
 def get_db_connection():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     db_path = os.path.join(base_dir, 'db.sqlite')
     return sqlite3.connect(db_path)
 
+#Get public holidays for desired year
+#Obtenez les jours fériés pour l'année souhaitée
+def get_holidays(year):
+    holidays = [
+        date(year, 1, 1),   # New Year's Day
+        date(year, 5, 1),   # Labour Day
+        date(year, 5, 8),   # Victory Day
+        date(year, 7, 14),  # Bastille Day
+        date(year, 8, 15),  # Assomption
+        date(year, 11, 1),  # All Saints' Day
+        date(year, 11, 11), # Armistice 1918
+        date(year, 12, 25), # Christmas
+        date(year, 12, 26), # Saint Étienne
+    ]
+    
+    # Calculate Easter Sunday
+    easter_sunday = easter.easter(year)
+    
+    # Calculate movable holidays
+    good_friday = easter_sunday - timedelta(days=2)
+    
+    easter_monday = easter_sunday + timedelta(days=1)
+    
+    ascension_day = easter_sunday + timedelta(days=39)
+    
+    whit_monday = easter_sunday + timedelta(days=50)
+    
+    # Add these holidays to the list
+    holidays.append(good_friday)
+    holidays.append(easter_monday)
+    holidays.append(ascension_day)
+    holidays.append(whit_monday)
+
+
+    
+
+    return holidays
+    
+    
 def generate_graph_age(request):
     
     connection = get_db_connection()
@@ -163,10 +205,19 @@ def generate_graph_RDVs(request):
     potential = []
     unique_dates = df['Date de début'].unique()
     
+    df['Year'] = df['Date de début'].dt.year
+
+    # Get the unique years
+    unique_years = df['Year'].unique()
+    holidays = []
+    
+    for year in unique_years:
+        holidays.extend(get_holidays(year))
+        
     for day in unique_dates:
         day_of_week = day.weekday()
 
-        if day_of_week == 5 or day_of_week == 6:
+        if day_of_week == 5 or day_of_week == 6 or day in holidays:
             potential.append(48)
             colors_potential.append('deepskyblue')
             colors_covered.append('blue')
