@@ -21,30 +21,41 @@
     <div id="popupImportData" class="popup">Importation des données !</div>
     <div id="popupDeleteData" class="popup">Suppression des données !</div>
     <div id="popupExportData" class="popup">Export des données !</div>
-
-    <table>
-    <thead>
-        <tr>
-            {% for col in data.columns %}
-                <td>
-                    {{col}}
-                </td>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for index, row in data.iterrows %}
+    <div class="main-view">
+        <table>
+        <thead>
             <tr>
-                {% for cell in row %}
+                {% for col in data.columns %}
                     <td>
-                        {{cell}}
+                        {{col}}
                     </td>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    <tbody>
-    </table>
-
+            </thead>
+            <tbody>
+            {% for index, row in data.iterrows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>
+                            {{cell}}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        <tbody>
+        </table>
+        <form action="/home/" method="post">
+            {% csrf_token %}
+        <input type="text" id="remove" name="remove_word" value="true" style="display: none">
+            {% for rm in rm_list %}
+                <div>
+                    <input type="text" id="word{{ forloop.counter }}" name="item{{ forloop.counter }}" value="{{ rm }}">
+                </div>
+            {% endfor %}
+            <input type="text" id="add_word" name="add_word" value="">
+            <button type="submit">Ajouter les mots</button>
+        </form>
+    </div>
 
 {#    <py-script>#}
 {#import pandas as pd#}
