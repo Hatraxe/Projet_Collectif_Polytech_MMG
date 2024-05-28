@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('agg')
 import pandas as pd
+import numpy as np
 
 from API import import_csv
 from API import export
@@ -327,7 +328,71 @@ def generate_graph_RDVs_honored(request):
     buffer.seek(0)
     return HttpResponse(buffer, content_type='image/png')
     
-       
+def generate_indicator_shifts(request):
+    from prettytable import PrettyTable
+   
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+        
+    table = PrettyTable()
+    table.field_names = ['Month', 'Potential shifts number', 'Covered shifts number', 'Percentage']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    potential = {}
+    covered = {}
+    
+    for month, group in grouped:
+        potential[month] = []
+        covered[month] = []
+        
+        df['Days'] = group['Date de début'].dt.to_period('D')
+        days = df.groupby('Days')
+        df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+
+        month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
+        missing = month_range.difference(group['Date de début'])
+        
+        for day in month_range:
+            if day in missing:
+                if day.weekday() == 5 or day.weekday() == 6:
+                    potential[month].append(3)
+                else:
+                    potential[month].append(1)
+            else:
+                day_of_week = day.weekday()
+                if day_of_week == 5 or day_of_week == 6:
+                    potential[month].append(3)
+                    day_group = df[df['Date de début'] == day]
+                
+                    x = 0
+                    hour = day_group['Début'].dt.hour
+                    if (hour >= 12).any() and (hour < 16).any():
+                        x += 1
+                    if (hour >= 16).any() and (hour < 20).any():
+                        x += 1
+                    if (hour >= 20).any() and (hour < 24).any():
+                        x += 1
+                    covered[month].append(x)
+                else:
+                    covered[month].append(1)
+                    potential[month].append(1)
+                
+        row = [month, sum(potential[month]), sum(covered[month]), np.round(sum(covered[month])/sum(potential[month]), 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')   
+    
+    
 from django.shortcuts import render
 
 # Create your views here.

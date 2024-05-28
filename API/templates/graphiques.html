@@ -59,9 +59,7 @@
 
 <script>
     $(document).ready(function() {
-        console.log("Document is ready");
         $('#generateGraphButton').click(function() {
-            console.log("Generate button clicked");
             // Check if 'Age' is selected in the dropdown
             if ($('#choiceBox').val() === 'age') {
                 $('#graph-img').attr('src', '/generate-graph-age/?' + new Date().getTime());
