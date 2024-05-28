@@ -42,8 +42,10 @@ def home(request):
         elif request.POST.get("remove_word") == "true":
             words_to_remove = []
             for key, value in request.POST.items():
-                if key.startswith('item') and value and value != "":
+                if key.startswith('item') and value:
+                    print(value)
                     words_to_remove.append(value)
+            print(words_to_remove)
             words_to_remove.append(request.POST.get("add_word"))
             import_csv.save_word_to_remove(words_to_remove)
             if len(raw_data) != 0:

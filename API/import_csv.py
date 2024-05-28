@@ -16,9 +16,9 @@ def csv_to_sqlite(data):
 def clear_csv(data):
     print(data.Notes)
     data = data.fillna("")  # remove "nan"
-    data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'[\r\n]', '', x)) # en deux regex ...
+    data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'[\r\n]', '', x)) # en deux regex chatGpt est nul...
     data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'\s+$', '', x))
-    print(data.Notes)
+    #print(data.Notes)
     try:
         rows_to_remove = words_to_remove()
     except:
@@ -42,5 +42,7 @@ def words_to_remove():
     filin = open("mot_a_retire.txt", "r")
     lines = filin.readlines()
     for line in lines:
-        rows_to_remove.append(line.replace("\n",""))
+        if line != "\n" and len(line) != 0:
+            rows_to_remove.append(line.replace("\n",""))
+    #print(rows_to_remove)
     return rows_to_remove
