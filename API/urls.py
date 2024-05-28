@@ -13,5 +13,7 @@ urlpatterns = [
     path('generate-graph-cree-par/', views.generate_graph_cree_par, name='generate_graph_cree_par'),
     path('generate-graph-RDVs/', views.generate_graph_RDVs, name='generate_graph_RDVs'),
     path('generate-graph-RDVs-honored/', views.generate_graph_RDVs_honored, name='generate_graph_RDVs_honored'),
-    path('generate-indicator-shifts/', views.generate_indicator_shifts, name='generate_indicator_shifts')
+    path('generate-indicator-shifts/', views.generate_indicator_shifts, name='generate_indicator_shifts'),
+    path('generate-indicator-RDVs/', views.generate_indicator_RDVs, name="generate_indicator_RDVs"),
+    path('generate-indicator-RDVs-honored/', views.generate_indicator_RDVs_honored, name="generate_indicator_RDVs_honored")
 ]

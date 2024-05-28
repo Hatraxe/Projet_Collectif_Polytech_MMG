@@ -11,6 +11,8 @@ import matplotlib
 matplotlib.use('agg')
 import pandas as pd
 import numpy as np
+from prettytable import PrettyTable
+
 
 from API import import_csv
 from API import export
@@ -305,9 +307,11 @@ def generate_graph_RDVs_honored(request):
     #EN: Count absent and non absent appointments
     #FR: Comptabiliser les RDVs absents et non absents
     for date, group in grouped:
-        absent_cnt = (group['Statut'] == 'Absent non excusé').sum()
+        absent_non_excuse_cnt = (group['Statut'] == 'Absent non excusé').sum()
+        absent_excuse_cnt = (group['Statut'] == 'Absent excusé').sum()
+        absent_cnt = absent_excuse_cnt + absent_non_excuse_cnt
         absent.append(absent_cnt)
-        taken_cnt = (group['Statut'] != 'Absent non excusé').sum()
+        taken_cnt = group['Statut'].count() - absent_cnt
         taken.append(taken_cnt)
         
     #EN: Make graph 
@@ -327,20 +331,24 @@ def generate_graph_RDVs_honored(request):
 
     buffer.seek(0)
     return HttpResponse(buffer, content_type='image/png')
-    
+
+#EN: Generate a table of shifts per month
+#FR : Générer un tableau des équipes par mois
 def generate_indicator_shifts(request):
-    from prettytable import PrettyTable
-   
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = cursor.fetchall()
     table_name = tables[0][0]
 
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
         
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
     table = PrettyTable()
     table.field_names = ['Month', 'Potential shifts number', 'Covered shifts number', 'Percentage']
     
@@ -355,25 +363,39 @@ def generate_indicator_shifts(request):
         covered[month] = []
         
         df['Days'] = group['Date de début'].dt.to_period('D')
-        days = df.groupby('Days')
         df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
 
         month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
         missing = month_range.difference(group['Date de début'])
         
+        #EN: Get the unique years
+        #FR: Obtenez les années uniques
+        df['Year'] = df['Date de début'].dt.year
+        unique_years = df['Year'].unique()
+        holidays = []
+        
+        #EN: For each year, calculate dates of public holidays and put them in a single list 
+        #FR: Pour chaque année, calculez les dates des jours fériés et regroupez-les dans une seule liste
+        for year in unique_years:
+            holidays.extend(get_holidays(year))
+        
+        #EN: Weekend or public holiday has 3 potential shifts
+        #FR: Week-end ou jour férié comporte 3 équipes potentiels
         for day in month_range:
             if day in missing:
-                if day.weekday() == 5 or day.weekday() == 6:
+                if day.weekday() == 5 or day.weekday() == 6 or day in holidays:
                     potential[month].append(3)
                 else:
                     potential[month].append(1)
             else:
                 day_of_week = day.weekday()
-                if day_of_week == 5 or day_of_week == 6:
+                if day_of_week == 5 or day_of_week == 6 or day in holidays:
                     potential[month].append(3)
                     day_group = df[df['Date de début'] == day]
                 
-                    x = 0
+                    #EN: x = How many shifts are covered in a non-working day
+                    #FR: x = Combien d'équipes sont couvertes dans une journée non ouvrable
+                    x = 0 
                     hour = day_group['Début'].dt.hour
                     if (hour >= 12).any() and (hour < 16).any():
                         x += 1
@@ -392,7 +414,124 @@ def generate_indicator_shifts(request):
     html_table = table.get_html_string()
     return HttpResponse(html_table, content_type='text/html')   
     
+def generate_indicator_RDVs(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Month', 'Potential RDVs number', 'Covered RDVs number', 'Percentage']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    potential = {}
+    covered = {}
+    
+    for month, group in grouped:
+        potential[month] = []
+        covered[month] = []
+        
+        df['Days'] = group['Date de début'].dt.to_period('D')
+        df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+
+        month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
+        missing = month_range.difference(group['Date de début'])
+        
+        #EN: Get the unique years
+        #FR: Obtenez les années uniques
+        df['Year'] = df['Date de début'].dt.year
+        unique_years = df['Year'].unique()
+        holidays = []
+        
+        #EN: For each year, calculate dates of public holidays and put them in a single list 
+        #FR: Pour chaque année, calculez les dates des jours fériés et regroupez-les dans une seule liste
+        for year in unique_years:
+            holidays.extend(get_holidays(year))
+        
+        #EN: Weekend or public holiday has 3 potential shifts
+        #FR: Week-end ou jour férié comporte 3 équipes potentiels
+        for day in month_range:
+            if day in missing:
+                if day.weekday() == 5 or day.weekday() == 6 or day in holidays:
+                    potential[month].append(48)
+                else:
+                    potential[month].append(16)
+            else:
+                day_of_week = day.weekday()
+                if day_of_week == 5 or day_of_week == 6 or day in holidays:
+                    potential[month].append(48)
+                    day_group = df[df['Date de début'] == day]
+                
+                    #EN: x = How many shifts are covered in a non-working day
+                    #FR: x = Combien d'équipes sont couvertes dans une journée non ouvrable
+                    x = 0 
+                    hour = day_group['Début'].dt.hour
+                    if (hour >= 12).any() and (hour < 16).any():
+                        x += 16
+                    if (hour >= 16).any() and (hour < 20).any():
+                        x += 16
+                    if (hour >= 20).any() and (hour < 24).any():
+                        x += 16
+                    covered[month].append(x)
+                else:
+                    covered[month].append(16)
+                    potential[month].append(16)
+                
+        row = [month, sum(potential[month]), sum(covered[month]), np.round(sum(covered[month])/sum(potential[month]), 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')   
+    
+def generate_indicator_RDVs_honored(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Month', 'RDVs made number', 'RDVs honored number', 'Percentage']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    made = {}
+    honored = {}
+    
+    #EN: Count absent and non absent appointments
+    #FR: Comptabiliser les RDVs absents et non absents
+    for month, group in grouped:
+        absent_non_excuse_cnt = (group['Statut'] == 'Absent non excusé').sum()
+        absent_excuse_cnt = (group['Statut'] == 'Absent excusé').sum()
+        absent_cnt = absent_excuse_cnt + absent_non_excuse_cnt
+        honored_cnt = group['Statut'].count() - absent_cnt
+        honored[month] = honored_cnt
+        made[month] = group['Statut'].count()
+                            
+        row = [month, made[month], honored[month], np.round(honored[month]/made[month], 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
     
 from django.shortcuts import render
-
-# Create your views here.

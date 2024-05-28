@@ -27,8 +27,8 @@
             <label>
                 <select class="choice-box", id="choiceBox">
                     <option value="shifts">Shifts</option>
-                    <option>Option 2</option>
-                    <option>Option 3</option>
+                    <option value="RDVs">RDVs</option>
+                    <option value="RDVsHonored">RDVs honored</option>
                 </select>
             </label>
             <button id="generateIndicatorsButton" class="button">Générer</button>
@@ -59,6 +59,16 @@
         $('#generateIndicatorsButton').click(function() {
             if ($('#choiceBox').val() === 'shifts') {
                 $.get('/generate-indicator-shifts/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'RDVs') {
+                $.get('/generate-indicator-RDVs/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'RDVsHonored') {
+                $.get('/generate-indicator-RDVs-honored/', function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
