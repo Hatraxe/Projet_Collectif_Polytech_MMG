@@ -17,13 +17,15 @@ from prettytable import PrettyTable
 from API import import_csv
 from API import export
 
+raw_data = []
 data = []
-
 
 def home(request):
     global data
+    global raw_data
 
     if request.method == 'POST':
+        # handle delete button
         if request.POST.get("delete") == "true":
             conn = sqlite3.connect("db.sqlite")
             cur = conn.cursor()
@@ -31,14 +33,34 @@ def home(request):
             cur.execute("CREATE TABLE IF NOT EXISTS csv_data(temp integer);")
             conn.close()
             data = []
+
+        #handle export button
         elif request.POST.get("export_home") == "true":
             export.make_csv()
+
+        #handle add "word" button
+        elif request.POST.get("remove_word") == "true":
+            words_to_remove = []
+            for key, value in request.POST.items():
+                if key.startswith('item') and value:
+                    print(value)
+                    words_to_remove.append(value)
+            print(words_to_remove)
+            words_to_remove.append(request.POST.get("add_word"))
+            import_csv.save_word_to_remove(words_to_remove)
+            if len(raw_data) != 0:
+                data = import_csv.clear_csv(raw_data)
+                import_csv.csv_to_sqlite(data)
+            # print(words_to_remove)
+
+        #handle add file in import button
         else:
             try:
-                data = pandas.read_csv(request.FILES['file'], sep=";")
-                if len(data) == 0:
+                raw_data = pandas.read_csv(request.FILES['file'], sep=";")
+                if len(raw_data) == 0:
                     raise Exception("Only header in csv file")
-                data = import_csv.csv_to_sqlite(data)
+                data = import_csv.clear_csv(raw_data)
+                import_csv.csv_to_sqlite(data)
             except pandas.errors.EmptyDataError as e:
                 print("Empty file")
                 print(format(e))
@@ -60,9 +82,9 @@ def home(request):
                 print(format(e))
                 data = []
     if len(data) == 0:
-        return render(request, 'home.html')
+        return render(request, 'home.html', {'rm_list': import_csv.words_to_remove()})
     else:
-        return render(request, 'home.html', {'data': data})
+        return render(request, 'home.html', {'data': data, 'rm_list': import_csv.words_to_remove()})
 
 
 def about(request):

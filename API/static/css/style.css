@@ -80,7 +80,7 @@ button, .button { /* Utilisez la classe .button pour les styles communs */
 
 /* Styles du tableau */
 table {
-    width: 90%; /* Largeur du tableau */
+    width: 80%; /* Largeur du tableau */
     margin: 0 auto; /* Centrer le tableau horizontalement */
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
@@ -176,4 +176,8 @@ footer {
 
 .grid-item {
     text-align: center; /* Centrer le contenu dans chaque cellule */
+}
+
+.main-view {
+    display: flex;
 }
