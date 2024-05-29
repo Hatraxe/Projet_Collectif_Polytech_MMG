@@ -26,9 +26,12 @@
         <div class="controls">
             <label>
                 <select class="choice-box", id="choiceBox">
-                    <option value="shifts">Shifts</option>
-                    <option value="RDVs">RDVs</option>
-                    <option value="RDVsHonored">RDVs honored</option>
+                    <option value="shifts">Vacations</option>
+                    <option value="RDV">RDV</option>
+                    <option value="RDVHonored">RDV honorés</option>
+                    <option value="distribution">Répartition de prise de RDV</option>
+                    <option value="statut">Statut</option>
+                    <option value="madecovered">RDV pris / RDV couverts</option>
                 </select>
             </label>
             <button id="generateIndicatorsButton" class="button">Générer</button>
@@ -62,17 +65,32 @@
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
-            } else if ($('#choiceBox').val() === 'RDVs') {
-                $.get('/generate-indicator-RDVs/', function(data) {
+            } else if ($('#choiceBox').val() === 'RDV') {
+                $.get('/generate-indicator-RDV/', function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
-            } else if ($('#choiceBox').val() === 'RDVsHonored') {
-                $.get('/generate-indicator-RDVs-honored/', function(data) {
+            } else if ($('#choiceBox').val() === 'RDVHonored') {
+                $.get('/generate-indicator-RDV-honored/', function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
-            } 
+            } else if ($('#choiceBox').val() === 'distribution') {
+                $.get('/generate-indicator-distribution-of-RDV/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'statut') {
+                $.get('/generate-indicator-statut/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'madecovered') {
+                $.get('/generate-indicator-RDV-made-covered/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            }
             else {
                 console.log("Option not selected.");
             }

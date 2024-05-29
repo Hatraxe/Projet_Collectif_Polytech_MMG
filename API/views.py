@@ -177,7 +177,7 @@ def generate_graph_age(request):
     #EN: Split into 3 age groups
     #FR: Réparti en 3 tranches d'âge
     bins = [0, 6, 15.25, float('inf')]
-    labels = ['Younger than 6', '6 to 15 years and 3 months', 'Adult']
+    labels = ['Moins de 6 ans', 'Moins de 15 ans et 3 mois', 'Adulte']
     
     df['Age Group'] = pd.cut(df['Age'], bins=bins, labels=labels, right=True, include_lowest=True)
     df['Age Group'] = pd.Categorical(df['Age Group'], categories=labels, ordered=True)
@@ -188,7 +188,7 @@ def generate_graph_age(request):
     #FR: Faire un graphique
     plt.figure(figsize=(6, 6))
     plt.pie(age_group_counts, labels=age_group_counts.index, autopct='%1.1f%%')
-    plt.title('Age Group', pad=30)
+    plt.title('Âge des patients ', pad=30)
     plt.axis('equal')
     
     #EN: Save graph as a picture
@@ -233,8 +233,8 @@ def generate_graph_cree_par(request):
     return HttpResponse(buffer, content_type='image/png')
 
 #EN: Bar chart for appointments
-#FR: Graphique à barres pour les RDVs
-def generate_graph_RDVs(request):
+#FR: Graphique à barres pour les RDV
+def generate_graph_RDV(request):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -248,7 +248,7 @@ def generate_graph_RDVs(request):
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
         
     #EN: Use different color for potential and covered appointments 
-    #FR: Utilisez une couleur différente pour les RDVs potentiels et couverts
+    #FR: Utilisez une couleur différente pour les RDV potentiels et couverts
     colors_potential = []
     colors_covered = []
     potential = []
@@ -269,31 +269,31 @@ def generate_graph_RDVs(request):
         day_of_week = day.weekday()
 
         #EN: Weekend or public holiday has 48 potential appointments
-        #FR: Week-end ou jour férié comporte 48 RDVs potentiels
+        #FR: Week-end ou jour férié comporte 48 RDV potentiels
         if day_of_week == 5 or day_of_week == 6 or day in holidays:
             potential.append(48)
             colors_potential.append('deepskyblue')
             colors_covered.append('blue')
         #EN: Work day has 16 potential appointments
-        #FR: La journée de travail comporte 16 RDVs potentiels
+        #FR: La journée de travail comporte 16 RDV potentiels
         else:
             potential.append(16)
             colors_potential.append('aquamarine')
             colors_covered.append('mediumseagreen')
         
     #EN: Count covered appointments in a day
-    #FR: Compter les RDVs couverts dans une journée
+    #FR: Compter les RDV couverts dans une journée
     covered = df.groupby('Date de début')['Début'].count()
         
         
     #EN: Make graph 
     #FR: Faire un graphique
     plt.figure(figsize=(20, 10))
-    plt.bar(unique_dates, potential, color=colors_potential, label='Potential RDVs')
-    plt.bar(unique_dates, covered, color=colors_covered, label='Covered RDVs')
+    plt.bar(unique_dates, potential, color=colors_potential, label='RDV potentiels')
+    plt.bar(unique_dates, covered, color=colors_covered, label='RDV couverts')
     plt.legend(loc='best')
     plt.grid()
-    plt.title("Num RDVs", pad=30)
+    plt.title("RDV couverts / RDV potentiels", pad=30)
     
     #EN: Save graph as a picture
     #FR: Enregistrer le graphique sous forme d'image
@@ -304,9 +304,9 @@ def generate_graph_RDVs(request):
     buffer.seek(0)
     return HttpResponse(buffer, content_type='image/png')
 
-#EN: Bar chart for appointments honored
-#FR: Graphique à barres pour les RDVs honorées
-def generate_graph_RDVs_honored(request):
+#EN: Bar chart for appointments honored/made
+#FR: Graphique à barres pour les RDV honorées/pris
+def generate_graph_RDV_honored(request):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -319,31 +319,32 @@ def generate_graph_RDVs_honored(request):
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
 
-    #EN: Use different color for taken and absent appointments 
-    #FR: Utilisez une couleur différente pour les RDVs pris et absents
-    taken = []
-    absent = []
+    #EN: Use different color for honored and made appointments 
+    #FR: Utilisez une couleur différente pour les RDV pris et honorés
+    made = []
+    honored = []
     unique_dates = df['Date de début'].unique()
     grouped = df.groupby('Date de début')
     
-    #EN: Count absent and non absent appointments
-    #FR: Comptabiliser les RDVs absents et non absents
+    #EN: Count honored and made appointments
+    #FR: Comptabiliser les RDV honorés et pris
     for date, group in grouped:
         absent_non_excuse_cnt = (group['Statut'] == 'Absent non excusé').sum()
         absent_excuse_cnt = (group['Statut'] == 'Absent excusé').sum()
         absent_cnt = absent_excuse_cnt + absent_non_excuse_cnt
-        absent.append(absent_cnt)
-        taken_cnt = group['Statut'].count() - absent_cnt
-        taken.append(taken_cnt)
+        honored_cnt = group['Début'].count() - absent_cnt
+        honored.append(honored_cnt)
+        made_cnt = group['Début'].count()
+        made.append(made_cnt)
         
     #EN: Make graph 
     #FR: Faire un graphique
     plt.figure(figsize=(20, 10))
-    plt.bar(unique_dates, taken, color='aquamarine', label='RDVs taken')
-    plt.bar(unique_dates, absent, color='mediumseagreen', label='RDVs absent')
+    plt.bar(unique_dates, made, color='aquamarine', label='RDV pris')
+    plt.bar(unique_dates, honored, color='mediumseagreen', label='RDV honorés')
     plt.legend(loc='best')
     plt.grid()
-    plt.title("Num RDVs honored", pad=30)
+    plt.title("RDV honorés / RDV pris", pad=30)
     
     #EN: Save graph as a picture
     #FR: Enregistrer le graphique sous forme d'image
@@ -355,7 +356,7 @@ def generate_graph_RDVs_honored(request):
     return HttpResponse(buffer, content_type='image/png')
 
 #EN: Generate a table of shifts per month
-#FR : Générer un tableau des équipes par mois
+#FR: Générer un tableau des équipes par mois
 def generate_indicator_shifts(request):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -372,7 +373,7 @@ def generate_indicator_shifts(request):
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
     table = PrettyTable()
-    table.field_names = ['Month', 'Potential shifts number', 'Covered shifts number', 'Percentage']
+    table.field_names = ['Mois', 'Vacations potentielles', 'Vacations couvertes', 'Pourcentage']
     
     df['Month'] = df['Date de début'].dt.to_period('M')
     grouped = df.groupby('Month')
@@ -430,13 +431,13 @@ def generate_indicator_shifts(request):
                     covered[month].append(1)
                     potential[month].append(1)
                 
-        row = [month, sum(potential[month]), sum(covered[month]), np.round(sum(covered[month])/sum(potential[month]), 2)]
+        row = [month, sum(potential[month]), sum(covered[month]), np.round((sum(covered[month])/sum(potential[month])) * 100, 2)]
         table.add_row(row)
         
     html_table = table.get_html_string()
     return HttpResponse(html_table, content_type='text/html')   
     
-def generate_indicator_RDVs(request):
+def generate_indicator_RDV(request):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -452,7 +453,7 @@ def generate_indicator_RDVs(request):
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
     table = PrettyTable()
-    table.field_names = ['Month', 'Potential RDVs number', 'Covered RDVs number', 'Percentage']
+    table.field_names = ['Mois', 'RDV potentiels', 'RDV couverts', 'Pourcentage']
     
     df['Month'] = df['Date de début'].dt.to_period('M')
     grouped = df.groupby('Month')
@@ -510,13 +511,13 @@ def generate_indicator_RDVs(request):
                     covered[month].append(16)
                     potential[month].append(16)
                 
-        row = [month, sum(potential[month]), sum(covered[month]), np.round(sum(covered[month])/sum(potential[month]), 2)]
+        row = [month, sum(potential[month]), sum(covered[month]), np.round((sum(covered[month])/sum(potential[month])) * 100, 2)]
         table.add_row(row)
         
     html_table = table.get_html_string()
     return HttpResponse(html_table, content_type='text/html')   
     
-def generate_indicator_RDVs_honored(request):
+def generate_indicator_RDV_honored(request):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -532,7 +533,7 @@ def generate_indicator_RDVs_honored(request):
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
     table = PrettyTable()
-    table.field_names = ['Month', 'RDVs made number', 'RDVs honored number', 'Percentage']
+    table.field_names = ['Mois', 'RDV pris', 'RDV honorés', 'Pourcentage']
     
     df['Month'] = df['Date de début'].dt.to_period('M')
     grouped = df.groupby('Month')
@@ -540,17 +541,165 @@ def generate_indicator_RDVs_honored(request):
     made = {}
     honored = {}
     
-    #EN: Count absent and non absent appointments
-    #FR: Comptabiliser les RDVs absents et non absents
+    #EN: Count honored and made appointments
+    #FR: Comptabiliser les RDV honorés et pris
     for month, group in grouped:
         absent_non_excuse_cnt = (group['Statut'] == 'Absent non excusé').sum()
         absent_excuse_cnt = (group['Statut'] == 'Absent excusé').sum()
         absent_cnt = absent_excuse_cnt + absent_non_excuse_cnt
-        honored_cnt = group['Statut'].count() - absent_cnt
+        honored_cnt = group['Début'].count() - absent_cnt
         honored[month] = honored_cnt
-        made[month] = group['Statut'].count()
+        made[month] = group['Début'].count()
                             
-        row = [month, made[month], honored[month], np.round(honored[month]/made[month], 2)]
+        row = [month, made[month], honored[month], np.round((honored[month]/made[month]) * 100, 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
+
+def generate_indicator_distribution_of_RDV(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    df['Créé par'] = df['Créé par'].str.replace(' MMG', '')
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Mois', 'RDV pris par le 15', 'RDV pris par SAS Ambulatoire', 'RDV pris par SAMU', 'RDV pris par Médecins']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    #EN: Count "Created by" values
+    #FR: Comptabiliser "Créé par"
+    for month, group in grouped:
+        sas_cnt = (group['Créé par'] == 'SAS Ambulatoire').sum()
+        samu_cnt = (group['Créé par'] == 'SAMU').sum()
+        medecins_cnt = (group['Créé par'] == 'Médecins').sum()
+        urgence_cnt = (group['Créé par'] == 'Urgence 1').sum()
+        
+        total = group['Créé par'].count()
+                            
+        row = [month, np.round((urgence_cnt/total) * 100, 2), np.round((sas_cnt/total) * 100, 2),
+               np.round((samu_cnt/total) * 100, 2), np.round((medecins_cnt/total) * 100, 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
+
+def generate_indicator_statut(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Mois', 'Vu', 'À venir', 'Absent excusé', 'Absent non excusé']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    #EN: Count statuses
+    #FR: Comptabiliser Statut
+    for month, group in grouped:
+        vu_cnt = (group['Statut'] == 'Vu').sum()
+        avenir_cnt = (group['Statut'] == 'À venir').sum()
+        excuse_cnt = (group['Statut'] == 'Absent excusé').sum()
+        nonexcuse_cnt = (group['Statut'] == 'Absent non excusé').sum()
+        
+        total = group['Statut'].count()
+                            
+        row = [month, np.round((vu_cnt/total) * 100, 2), np.round((avenir_cnt/total) * 100, 2),
+               np.round((excuse_cnt/total) * 100, 2), np.round((nonexcuse_cnt/total) * 100, 2)]
+        table.add_row(row)
+        
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
+
+def generate_indicator_RDV_made_covered(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Mois', 'RDV pris', 'RDV couverts', 'Pourcentage']
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    made = {}
+    covered = {}
+    
+    for month, group in grouped:
+        covered[month] = []
+        made[month] = group['Début'].count()
+        
+        month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
+        missing = month_range.difference(group['Date de début'])
+        
+        #EN: Get the unique years
+        #FR: Obtenez les années uniques
+        df['Year'] = df['Date de début'].dt.year
+        unique_years = df['Year'].unique()
+        holidays = []
+        
+        #EN: For each year, calculate dates of public holidays and put them in a single list 
+        #FR: Pour chaque année, calculez les dates des jours fériés et regroupez-les dans une seule liste
+        for year in unique_years:
+            holidays.extend(get_holidays(year))
+        
+        #EN: Weekend or public holiday has 48 potential appointments
+        #FR: Week-end ou jour férié comporte 48 RDV potentiels
+        for day in month_range:
+            if day not in missing:
+                day_of_week = day.weekday()
+                if day_of_week == 5 or day_of_week == 6 or day in holidays:
+                    day_group = df[df['Date de début'] == day]
+                
+                    #EN: x = How many shifts are covered in a non-working day
+                    #FR: x = Combien d'équipes sont couvertes dans une journée non ouvrable
+                    x = 0 
+                    hour = day_group['Début'].dt.hour
+                    if (hour >= 12).any() and (hour < 16).any():
+                        x += 16
+                    if (hour >= 16).any() and (hour < 20).any():
+                        x += 16
+                    if (hour >= 20).any() and (hour < 24).any():
+                        x += 16
+                    covered[month].append(x)
+                else:
+                    covered[month].append(16)
+                
+        row = [month, made[month], sum(covered[month]), np.round(made[month]/sum(covered[month]) * 100, 2)]
         table.add_row(row)
         
     html_table = table.get_html_string()

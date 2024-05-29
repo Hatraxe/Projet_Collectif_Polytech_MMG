@@ -22,7 +22,7 @@
         <div class="graph-container">
     <h2>Graphiques</h2>
     <div id="graph-container">
-        <img id="graph-img" src="">
+        <img id="graph-img" src="" class="graph-container">
     </div>
 </div>
     </div>
@@ -30,10 +30,10 @@
         <div class="controls">
             <label>
                 <select class="choice-box", id="choiceBox">
-                    <option value="age">Age</option>
+                    <option value="age">Âge</option>
                     <option value="creepar">Créé par</option>
-                    <option value='RDVs'>RDVs</option>
-                    <option value='RDVshonored'>RDVs honored</option>
+                    <option value='RDV'>RDV</option>
+                    <option value='RDVhonored'>RDV honorés</option>
                 </select>
             </label>
             <button id="generateGraphButton" class="button">Générer</button>
@@ -67,11 +67,11 @@
             } else if ($('#choiceBox').val() === 'creepar') {
                 $('#graph-img').attr('src', '/generate-graph-cree-par/?' + new Date().getTime());
                 $('#graph-container').show();
-            } else if ($('#choiceBox').val() === 'RDVs') {
-                $('#graph-img').attr('src', '/generate-graph-RDVs/?' + new Date().getTime());
+            } else if ($('#choiceBox').val() === 'RDV') {
+                $('#graph-img').attr('src', '/generate-graph-RDV/?' + new Date().getTime());
                 $('#graph-container').show();
-            } else if ($('#choiceBox').val() === 'RDVshonored') {
-                $('#graph-img').attr('src', '/generate-graph-RDVs-honored/?' + new Date().getTime());
+            } else if ($('#choiceBox').val() === 'RDVhonored') {
+                $('#graph-img').attr('src', '/generate-graph-RDV-honored/?' + new Date().getTime());
                 $('#graph-container').show();
             } 
             else {
