@@ -37,8 +37,9 @@ def make_csv():
 
         root = tk.Tk()
         root.withdraw()
+        root.wm_attributes('-topmost', 1)
         try :
-            file_path = filedialog.asksaveasfile(defaultextension="csv")
+            file_path = filedialog.asksaveasfile(filetypes=[("CSV files", "*.csv")],defaultextension="*.csv")
             file_path = file_path.name
 
             file = open(file_path, 'w')
