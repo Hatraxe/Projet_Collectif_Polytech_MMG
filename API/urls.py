@@ -18,5 +18,7 @@ urlpatterns = [
     path('generate-indicator-RDV-honored/', views.generate_indicator_RDV_honored, name="generate_indicator_RDV_honored"),
     path('generate-indicator-distribution-of-RDV/', views.generate_indicator_distribution_of_RDV, name="generate_indicator_distribution_of_RDV"),
     path('generate-indicator-statut/', views.generate_indicator_statut, name="generate_indicator_statut"),
-    path('generate-indicator-RDV-made-covered/', views.generate_indicator_RDV_made_covered, name="generate_indicator_RDV_made_covered")
+    path('generate-indicator-RDV-made-covered/', views.generate_indicator_RDV_made_covered, name="generate_indicator_RDV_made_covered"),
+    path('generate-indicator-breakdown-of-times-workday/', views.generate_indicator_breakdown_of_times_workday, name="generate_indicator_breakdown_of_times_workday"),
+    path('generate-indicator-breakdown-of-times-weekend-holiday/', views.generate_indicator_breakdown_of_times_weekend_holiday, name="generate_indicator_breakdown_of_times_weekend_holiday")
 ]

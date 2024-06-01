@@ -704,5 +704,160 @@ def generate_indicator_RDV_made_covered(request):
         
     html_table = table.get_html_string()
     return HttpResponse(html_table, content_type='text/html')
+
+#EN: Breakdown of times for workdays only
+#FR: Découpage des horaires pour les jours ouvrés uniquement
+def generate_indicator_breakdown_of_times_workday(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+    
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    all_hours = list(range(20, 24))
+    table = PrettyTable()
+    table.field_names = ['Mois'] + [f'{hour}h' for hour in all_hours]
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    for month, group in grouped:
+        #EN: dictionary with counters for each hour
+        #FR: dictionnaire avec compteurs pour chaque heure
+        times = {hour: 0 for hour in all_hours}
+        total = 0
+        
+        month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
+        missing = month_range.difference(group['Date de début'])
+        
+        #EN: Get the unique years
+        #FR: Obtenez les années uniques
+        df['Year'] = df['Date de début'].dt.year
+        unique_years = df['Year'].unique()
+        holidays = []
+        
+        #EN: For each year, calculate dates of public holidays and put them in a single list 
+        #FR: Pour chaque année, calculez les dates des jours fériés et regroupez-les dans une seule liste
+        for year in unique_years:
+            holidays.extend(get_holidays(year))
+        
+        for day in month_range:
+            if day not in missing:
+                day_of_week = day.weekday()
+                if day_of_week != 5 and day_of_week != 6 and day not in holidays:
+                    day_group = df[df['Date de début'] == day]
+                    
+                    #EN: Increase the counter if there is a Debut at that hour
+                    #FR: Augmenter le compteur s'il y a un début à cette heure
+                    hour = day_group['Début'].dt.hour
+                    for h in hour:
+                        times[h] = times.get(h, 0) + 1
+                        total = total + 1
+
+        #EN: insert row with percentages
+        #FR: insérer une ligne avec des pourcentages
+        row = [month]
+        for key in sorted(times.keys()):
+            value = times[key]
+            if total != 0:
+                percentage = np.round((value / total * 100), 2)
+            else:
+                percentage = np.round(value, 2)
+            row.append(percentage)
+        table.add_row(row)
+                    
+                
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
+
+#EN: Breakdown of times for weekends and holidays 
+#FR: Découpage des horaires week-end et jours fériés
+def generate_indicator_breakdown_of_times_weekend_holiday(request):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    table_name = tables[0][0]
+
+    #EN: Read data from database
+    #FR: Lire les données de la base de données
+    df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
+    df = df.copy()
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+    
+    #EN: First pass to collect all possible hours
+    #FR: Premier pass pour récupérer toutes les heures possibles
+    all_hours = set()
+    for month, group in grouped:
+        hours = group['Début'].dt.hour
+        all_hours.update(hours)
+
+    all_hours = sorted(all_hours)
+        
+    #EN: Create a table with desired columns
+    #FR: Créer un tableau avec les colonnes souhaitées
+    table = PrettyTable()
+    table.field_names = ['Mois'] + [f'{hour}h' for hour in all_hours]
+    
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
+    for month, group in grouped:
+        #EN: dictionary with counters for each hour
+        #FR: dictionnaire avec compteurs pour chaque heure
+        times = {hour: 0 for hour in all_hours}
+        total = 0
+        
+        month_range = pd.date_range(start=month.start_time, end=month.end_time, freq='D')
+        missing = month_range.difference(group['Date de début'])
+        
+        #EN: Get the unique years
+        #FR: Obtenez les années uniques
+        df['Year'] = df['Date de début'].dt.year
+        unique_years = df['Year'].unique()
+        holidays = []
+        
+        #EN: For each year, calculate dates of public holidays and put them in a single list 
+        #FR: Pour chaque année, calculez les dates des jours fériés et regroupez-les dans une seule liste
+        for year in unique_years:
+            holidays.extend(get_holidays(year))
+        
+        for day in month_range:
+            if day not in missing:
+                day_of_week = day.weekday()
+                if day_of_week == 5 or day_of_week == 6 or day in holidays:
+                    day_group = df[df['Date de début'] == day]
+                    
+                    #EN: Increase the counter if there is a Debut at that hour
+                    #FR: Augmenter le compteur s'il y a un début à cette heure
+                    hour = day_group['Début'].dt.hour
+                    for h in hour:
+                        times[h] = times.get(h, 0) + 1
+                        total = total + 1
+
+        #EN: insert row with percentages
+        #FR: insérer une ligne avec des pourcentages
+        row = [month]
+        for key in sorted(times.keys()):
+            value = times[key]
+            if total != 0:
+                percentage = np.round((value / total * 100), 2)
+            else:
+                percentage = np.round(value, 2)
+            row.append(percentage)
+        table.add_row(row)
+                
+    html_table = table.get_html_string()
+    return HttpResponse(html_table, content_type='text/html')
     
 from django.shortcuts import render

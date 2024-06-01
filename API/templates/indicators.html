@@ -32,6 +32,8 @@
                     <option value="distribution">Répartition de prise de RDV</option>
                     <option value="statut">Statut</option>
                     <option value="madecovered">RDV pris / RDV couverts</option>
+                    <option value="breakdown">Répartition heure</option>
+                    <option value="breakdownHoliday">Répartition heure week-end</option>
                 </select>
             </label>
             <button id="generateIndicatorsButton" class="button">Générer</button>
@@ -87,6 +89,16 @@
                 });
             } else if ($('#choiceBox').val() === 'madecovered') {
                 $.get('/generate-indicator-RDV-made-covered/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'breakdown') {
+                $.get('/generate-indicator-breakdown-of-times-workday/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'breakdownHoliday') {
+                $.get('/generate-indicator-breakdown-of-times-weekend-holiday/', function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
