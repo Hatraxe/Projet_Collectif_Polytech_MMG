@@ -28,6 +28,10 @@
     </div>
     <footer>
         <div class="controls">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
             <label>
                 <select class="choice-box", id="choiceBox">
                     <option value="age">Âge</option>
@@ -60,18 +64,32 @@
 <script>
     $(document).ready(function() {
         $('#generateGraphButton').click(function() {
-            // Check if 'Age' is selected in the dropdown
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            var requestData = {};
+            if (startDate) requestData.start_date = startDate;
+            if (endDate) requestData.end_date = endDate;
+
             if ($('#choiceBox').val() === 'age') {
-                $('#graph-img').attr('src', '/generate-graph-age/?' + new Date().getTime());
+                var queryString = $.param(requestData);
+                var fullUrl = '/generate-graph-age/' + '?' + queryString;
+                $('#graph-img').attr('src', fullUrl + '&' + new Date().getTime());
                 $('#graph-container').show();
             } else if ($('#choiceBox').val() === 'creepar') {
-                $('#graph-img').attr('src', '/generate-graph-cree-par/?' + new Date().getTime());
+                var queryString = $.param(requestData);
+                var fullUrl = '/generate-graph-cree-par/' + '?' + queryString;
+                $('#graph-img').attr('src', fullUrl + '&' + new Date().getTime());
                 $('#graph-container').show();
             } else if ($('#choiceBox').val() === 'RDV') {
-                $('#graph-img').attr('src', '/generate-graph-RDV/?' + new Date().getTime());
+                var queryString = $.param(requestData);
+                var fullUrl = '/generate-graph-RDV/' + '?' + queryString;
+                $('#graph-img').attr('src', fullUrl + '&' + new Date().getTime());
                 $('#graph-container').show();
             } else if ($('#choiceBox').val() === 'RDVhonored') {
-                $('#graph-img').attr('src', '/generate-graph-RDV-honored/?' + new Date().getTime());
+                var queryString = $.param(requestData);
+                var fullUrl = '/generate-graph-RDV-honored/' + '?' + queryString;
+                $('#graph-img').attr('src', fullUrl + '&' + new Date().getTime());
                 $('#graph-container').show();
             } 
             else {

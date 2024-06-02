@@ -24,6 +24,10 @@
     </div>
     <footer>
         <div class="controls">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
             <label>
                 <select class="choice-box", id="choiceBox">
                     <option value="shifts">Vacations</option>
@@ -62,43 +66,51 @@
 <script>
     $(document).ready(function() {
         $('#generateIndicatorsButton').click(function() {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            var requestData = {};
+            if (startDate) requestData.start_date = startDate;
+            if (endDate) requestData.end_date = endDate;
+
+
             if ($('#choiceBox').val() === 'shifts') {
-                $.get('/generate-indicator-shifts/', function(data) {
+                $.get('/generate-indicator-shifts/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'RDV') {
-                $.get('/generate-indicator-RDV/', function(data) {
+                $.get('/generate-indicator-RDV/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'RDVHonored') {
-                $.get('/generate-indicator-RDV-honored/', function(data) {
+                $.get('/generate-indicator-RDV-honored/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'distribution') {
-                $.get('/generate-indicator-distribution-of-RDV/', function(data) {
+                $.get('/generate-indicator-distribution-of-RDV/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'statut') {
-                $.get('/generate-indicator-statut/', function(data) {
+                $.get('/generate-indicator-statut/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'madecovered') {
-                $.get('/generate-indicator-RDV-made-covered/', function(data) {
+                $.get('/generate-indicator-RDV-made-covered/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'breakdown') {
-                $.get('/generate-indicator-breakdown-of-times-workday/', function(data) {
+                $.get('/generate-indicator-breakdown-of-times-workday/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });
             } else if ($('#choiceBox').val() === 'breakdownHoliday') {
-                $.get('/generate-indicator-breakdown-of-times-weekend-holiday/', function(data) {
+                $.get('/generate-indicator-breakdown-of-times-weekend-holiday/', requestData, function(data) {
                     $('#indicator-container').html(data); // Set the HTML content of the container
                     $('#indicator-container').show();
                 });

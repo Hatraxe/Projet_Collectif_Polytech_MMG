@@ -113,6 +113,17 @@ def get_db_connection():
     db_path = os.path.join(base_dir, 'db.sqlite')
     return sqlite3.connect(db_path)
 
+def filter_dates(start_date, end_date, df):
+    # Filter the DataFrame based on the start and end dates
+    if start_date and end_date:
+        df = df[(df['Date de début'] >= start_date) & (df['Date de début'] <= end_date)]
+    elif start_date:
+        df = df[df['Date de début'] >= start_date]
+    elif end_date:
+        df = df[df['Date de début'] <= end_date]
+        
+    return df
+
 #EN: Get public holidays for desired year
 #FR: Obtenez les jours fériés pour l'année souhaitée
 def get_holidays(year):
@@ -164,7 +175,7 @@ def generate_graph_age(request):
     
     #EN: Get date of birth
     #FR: Obtenir la date de naissance
-    df = pd.read_sql_query('SELECT "Date de naissance" FROM '+str(table_name), connection)
+    df = pd.read_sql_query('SELECT * FROM '+str(table_name), connection)
     df = df.copy()
 
     #EN: Calculate age of each person
@@ -173,6 +184,20 @@ def generate_graph_age(request):
     today = pd.to_datetime(today_str, format='%d%m%y')
     df['Date de naissance'] = pd.to_datetime(df['Date de naissance'], format='%d/%m/%Y')
     df['Age'] = df['Date de naissance'].apply(lambda x: today.year - x.year - ((today.month, today.day) < (x.month, x.day)))
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
+    
     
     #EN: Split into 3 age groups
     #FR: Réparti en 3 tranches d'âge
@@ -211,9 +236,23 @@ def generate_graph_cree_par(request):
     
     #EN: Get "Created by" and remove "MMG" from values
     #FR: Obtenez "Créé par" et supprimez "MMG" des valeurs
-    df = pd.read_sql_query('SELECT "Créé par" FROM '+str(table_name), connection)
+    df = pd.read_sql_query('SELECT * FROM '+str(table_name), connection)
     df = df.copy()
     df['Créé par'] = df['Créé par'].str.replace('MMG', '')
+    df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
+    
     cree_counts = df['Créé par'].value_counts()
     
     #EN: Make graph 
@@ -246,6 +285,18 @@ def generate_graph_RDV(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Use different color for potential and covered appointments 
     #FR: Utilisez une couleur différente pour les RDV potentiels et couverts
@@ -318,6 +369,18 @@ def generate_graph_RDV_honored(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
 
     #EN: Use different color for honored and made appointments 
     #FR: Utilisez une couleur différente pour les RDV pris et honorés
@@ -369,6 +432,18 @@ def generate_indicator_shifts(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -449,6 +524,18 @@ def generate_indicator_RDV(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -529,6 +616,18 @@ def generate_indicator_RDV_honored(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -570,6 +669,18 @@ def generate_indicator_distribution_of_RDV(request):
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     df['Créé par'] = df['Créé par'].str.replace(' MMG', '')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -608,6 +719,18 @@ def generate_indicator_statut(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -647,6 +770,18 @@ def generate_indicator_RDV_made_covered(request):
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
         
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -720,6 +855,18 @@ def generate_indicator_breakdown_of_times_workday(request):
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+    
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
     
     #EN: Create a table with desired columns
     #FR: Créer un tableau avec les colonnes souhaitées
@@ -795,8 +942,23 @@ def generate_indicator_breakdown_of_times_weekend_holiday(request):
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
     
+    #EN: Get start_date and end_date from request (if sent)
+    #FR: Récupère start_date et end_date de la requête (si envoyée)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+    df = filter_dates(start_date, end_date, df)
+    
     #EN: First pass to collect all possible hours
     #FR: Premier pass pour récupérer toutes les heures possibles
+    df['Month'] = df['Date de début'].dt.to_period('M')
+    grouped = df.groupby('Month')
+    
     all_hours = set()
     for month, group in grouped:
         hours = group['Début'].dt.hour
