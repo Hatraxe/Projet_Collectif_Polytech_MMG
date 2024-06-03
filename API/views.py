@@ -239,6 +239,7 @@ def generate_graph_cree_par(request):
     df = pd.read_sql_query('SELECT * FROM '+str(table_name), connection)
     df = df.copy()
     df['Créé par'] = df['Créé par'].str.replace('MMG', '')
+    df['Créé par'] = df['Créé par'].str.replace('SAMU', 'Médecins régulateurs libéraux')
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     
     #EN: Get start_date and end_date from request (if sent)
@@ -257,7 +258,7 @@ def generate_graph_cree_par(request):
     
     #EN: Make graph 
     #FR: Faire un graphique
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(6, 6))
     plt.pie(cree_counts, labels=cree_counts.index, autopct='%1.1f%%')
     plt.title('Créé par', pad=30)
     plt.axis('equal')
@@ -285,6 +286,8 @@ def generate_graph_RDV(request):
     df = pd.read_sql_query('SELECT * FROM ' + table_name, connection)
     df = df.copy()
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
+    df['Début'] = pd.to_datetime(df['Début'], format='%Hh%M')
+
     
     #EN: Get start_date and end_date from request (if sent)
     #FR: Récupère start_date et end_date de la requête (si envoyée)
@@ -293,17 +296,26 @@ def generate_graph_RDV(request):
 
     if start_date:
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    else:
+        start_date = df['Date de début'].min()
     if end_date:
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    else: 
+        end_date = df['Date de début'].max()
         
     df = filter_dates(start_date, end_date, df)
+    
+    covered =[]
+    made = []
         
+    all_dates = pd.to_datetime(df['Date de début'].unique(), format='%d/%m/%Y')
+    unique_dates = sorted(all_dates)
+    unique_dates = pd.to_datetime(unique_dates, format='%d/%m/%Y')
+          
     #EN: Use different color for potential and covered appointments 
     #FR: Utilisez une couleur différente pour les RDV potentiels et couverts
-    colors_potential = []
     colors_covered = []
-    potential = []
-    unique_dates = df['Date de début'].unique()
+    colors_made = []
     
     #EN: Get the unique years
     #FR: Obtenez les années uniques
@@ -322,29 +334,41 @@ def generate_graph_RDV(request):
         #EN: Weekend or public holiday has 48 potential appointments
         #FR: Week-end ou jour férié comporte 48 RDV potentiels
         if day_of_week == 5 or day_of_week == 6 or day in holidays:
-            potential.append(48)
-            colors_potential.append('deepskyblue')
-            colors_covered.append('blue')
+            day_group = df[df['Date de début'] == day]
+                
+            #EN: x = How many shifts are covered in a non-working day
+            #FR: x = Combien d'équipes sont couvertes dans une journée non ouvrable
+            x = 0 
+            hour = day_group['Début'].dt.hour
+            if (hour >= 12).any() and (hour < 16).any():
+                x += 16
+            if (hour >= 16).any() and (hour < 20).any():
+                x += 16
+            if (hour >= 20).any() and (hour < 24).any():
+                x += 16
+            covered.append(x)
+            colors_covered.append('deepskyblue')
+            colors_made.append('blue')
         #EN: Work day has 16 potential appointments
         #FR: La journée de travail comporte 16 RDV potentiels
         else:
-            potential.append(16)
-            colors_potential.append('aquamarine')
-            colors_covered.append('mediumseagreen')
+            covered.append(16)
+            colors_covered.append('aquamarine')
+            colors_made.append('mediumseagreen')
         
-    #EN: Count covered appointments in a day
-    #FR: Compter les RDV couverts dans une journée
-    covered = df.groupby('Date de début')['Début'].count()
-        
+    #EN: Count made appointments in a day
+    #FR: Compter les RDV pris dans une journée
+    made = df.groupby('Date de début')['Début'].count()
+     
         
     #EN: Make graph 
     #FR: Faire un graphique
     plt.figure(figsize=(20, 10))
-    plt.bar(unique_dates, potential, color=colors_potential, label='RDV potentiels')
     plt.bar(unique_dates, covered, color=colors_covered, label='RDV couverts')
+    plt.bar(unique_dates, made, color=colors_made, label='RDV pris')
     plt.legend(loc='best')
     plt.grid()
-    plt.title("RDV couverts / RDV potentiels", pad=30)
+    plt.title("RDV couverts / RDV pris", pad=30)
     
     #EN: Save graph as a picture
     #FR: Enregistrer le graphique sous forme d'image
