@@ -24,6 +24,7 @@
 <div class="main-content">
     <div id="popupImportData" class="popup">Importation des données !</div>
     <div id="popupDeleteData" class="popup">Suppression des données !</div>
+    <div id="popupExportData" class="popup">Export des données !</div>
     <div class="main-view">
     <div class="table-responsive">
 
@@ -98,6 +99,24 @@
             <input type="text" id="delete" name="delete" value="true" style="display: none">
             <button id="deleteDataButton" class="button" type="submit">Supprimer</button>
         </form>
+        <button id="exportButton" class="button">Exporter</button>
+    </div>
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <span class="closeExport">&times</span>
+            <h2>Exporter des données</h2>
+            <p>Choisissez le format de fichier :</p>
+            <label for="fileFormatSelector"></label><select id="fileFormatSelector">
+                <option value="excel">Excel</option>
+                <option value="csv">CSV</option>
+            </select>
+            <form action="/home/" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" id="export_home" name="export_home" value="true" style="display: none">
+                <button id="exportDataButton" class="button" type="submit">Exporter Maintenant</button>
+            </form>
+        </div>
+
     </div>
     <div id="myModal" class="modal">
     <div class="modal-content">

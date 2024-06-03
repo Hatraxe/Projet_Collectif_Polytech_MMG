@@ -277,10 +277,10 @@ button{ /* Utilisez la classe .button pour les styles communs */
     margin-left:20px;
 }
 
+
 table {
 
     margin: 0 auto; /* Centrer le tableau horizontalement */
-
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
     font-size: 12px; /* Réduction de la taille de la police */
@@ -311,6 +311,7 @@ th {
 /* Footer avec les contrôles */
 footer {
     justify-content: center;
+    margin-top: 20px;
     display: flex;
     align-items: center;
     position: fixed;
