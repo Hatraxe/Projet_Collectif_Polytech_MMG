@@ -1,5 +1,6 @@
 import re
 import sqlite3
+import pandas as pd
 
 
 def csv_to_sqlite(data):
@@ -14,16 +15,15 @@ def csv_to_sqlite(data):
 
 # Remove unexpect data in csv file like rest
 def clear_csv(data):
-    print(data.Notes)
     data = data.fillna("")  # remove "nan"
-    data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'[\r\n]', '', x)) # en deux regex chatGpt est nul...
+    data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'[\r\n]', '', x))
     data['Notes'] = data['Notes'].apply(lambda x: re.sub(r'\s+$', '', x))
-    #print(data.Notes)
     try:
         rows_to_remove = words_to_remove()
     except:
         rows_to_remove = []
-    # print(rows_to_remove)
+
+    data = data[pd.to_datetime(data["Date de naissance"], errors='coerce') <= pd.to_datetime('today')]
     save_word_to_remove(rows_to_remove)
     for i in range(len(rows_to_remove)):
         data = data.drop(data[(data.Notes == rows_to_remove[i])].index)
@@ -44,5 +44,4 @@ def words_to_remove():
     for line in lines:
         if line != "\n" and len(line) != 0:
             rows_to_remove.append(line.replace("\n",""))
-    #print(rows_to_remove)
     return rows_to_remove

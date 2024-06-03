@@ -3,12 +3,12 @@ from dateutil import easter
 from io import BytesIO
 import os
 from django.http import HttpResponse
-import pandas
 import sqlite3
 from django import forms
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('agg')
+import pandas
 import pandas as pd
 import numpy as np
 from prettytable import PrettyTable
