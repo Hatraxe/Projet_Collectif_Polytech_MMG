@@ -21,10 +21,12 @@
     <div class="main-content">
         <div id="popupAddIndicatorsToDashboard" class="popup">Données ajoutées au tableau de bord avec succès !</div>
         <div id="popupGenerateIndicators" class="popup">Données générées avec succès !</div>
-    </div>
-    <div id="indicator-container">
+
+    <div id="indicator-container" class="table-responsive">
         <!-- HTML table will be inserted here -->
     </div>
+
+        </div>
     <footer>
         <div class="controls">
             <label for="startDate">Date de début:</label>
@@ -47,6 +49,19 @@
 
             <button id="addIndicatorsToDashboard" class="button">Ajouter au tableau de bord</button>
 
+            <button id="exportIndicatorsButton" class="button">Exporter</button>
+
+            <div id="exportIndicatorsModal" class="modal">
+                <div class="modal-content">
+                    <span class="closeIndicators">&times;</span>
+                    <h2>Exporter des données</h2>
+                    <p>Choisissez le format de fichier :</p>
+                    <select id="fileFormatSelector">
+                        <option value="csv">CSV</option>
+                    </select>
+                    <button onclick="startExport()">Exporter Maintenant</button>
+                </div>
+            </div>
 
         </div>
     </footer>
