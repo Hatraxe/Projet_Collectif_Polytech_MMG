@@ -236,6 +236,7 @@ def generate_graph_cree_par(request):
     df = pd.read_sql_query('SELECT * FROM '+str(table_name), connection)
     df = df.copy()
     df['Créé par'] = df['Créé par'].str.replace('MMG', '')
+    df['Créé par'] = df['Créé par'].str.replace('Urgence 2', 'Urgence 1')
     df['Créé par'] = df['Créé par'].str.replace('SAMU', 'Médecins régulateurs libéraux')
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     
@@ -255,8 +256,8 @@ def generate_graph_cree_par(request):
     
     #EN: Make graph 
     #FR: Faire un graphique
-    plt.figure(figsize=(6, 6))
-    plt.pie(cree_counts, labels=cree_counts.index, autopct='%1.1f%%')
+    plt.figure(figsize=(8, 8))
+    plt.pie(cree_counts, labels=cree_counts.index, autopct='%1.1f%%', startangle=90)
     plt.title('Créé par', pad=30)
     plt.axis('equal')
     
@@ -293,12 +294,8 @@ def generate_graph_RDV(request):
 
     if start_date:
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    else:
-        start_date = df['Date de début'].min()
     if end_date:
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    else: 
-        end_date = df['Date de début'].max()
         
     df = filter_dates(start_date, end_date, df)
     
