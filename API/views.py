@@ -43,15 +43,12 @@ def home(request):
             words_to_remove = []
             for key, value in request.POST.items():
                 if key.startswith('item') and value:
-                    print(value)
                     words_to_remove.append(value)
-            print(words_to_remove)
             words_to_remove.append(request.POST.get("add_word"))
             import_csv.save_word_to_remove(words_to_remove)
             if len(raw_data) != 0:
                 data = import_csv.clear_csv(raw_data)
                 import_csv.csv_to_sqlite(data)
-            # print(words_to_remove)
 
         #handle add file in import button
         else:
