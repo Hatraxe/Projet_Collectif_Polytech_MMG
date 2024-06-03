@@ -8,11 +8,116 @@ html, body {
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: white; /* couleur de fond claire pour le corps */
     flex: 1; /* permet au contenu de remplir l'espace disponible */
 }
 
-.main-content{
+/* Styles de base pour les input containers */
+.input-container {
+    margin-bottom: 30px;
+    margin-top:30px;
+    display: block; /* Assurez-vous que chaque conteneur d'input est affiché en bloc */
+    text-align: center; /* Centrer les inputs horizontalement */
+}
+
+/* Style pour les inputs de texte */
+.form__input {
+    width: 80%; /* Ajustez la largeur des inputs selon vos besoins */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 12px;
+    transition: border-color 0.3s;
+    display: block; /* Assurez-vous que chaque input est affiché en bloc */
+    margin: 5px auto; /* Centrer chaque input horizontalement */
+}
+
+/* Style pour les inputs de texte au focus */
+.form__input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+
+button.addWordButton{
+    display: block;
+    outline: 0;
+    cursor: pointer;
+    border: none;
+    margin: 30px auto;
+    padding: 0 30px;
+    height: 45px;
+    line-height: 45px;
+    border-radius: 7px;
+    font-weight: 400;
+    font-size: 16px;
+    background: #fff;
+    color: #696969;
+    box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
+        transition: background 0.2s ease,color 0.2s ease,box-shadow 0.2s ease;
+        :hover{
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 6px 20px rgb(93 93 93 / 23%);
+        }
+}
+/* Sidenav menu */
+.sidenav {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: -250px;
+    background-color: #e8e8e8;
+    padding-top: 60px;
+    transition: left 0.5s ease;
+    box-shadow: 0 0px 20px rgba(0,0,0,0.5);
+}
+
+/* Sidenav menu links */
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #111;
+}
+
+.sidenav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Active class */
+.sidenav.active {
+    left: 0;
+}
+
+/* Close btn */
+.sidenav .close {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Icône burger */
+.burger-icon span {
+    display: block;
+    width: 35px;
+    height: 5px;
+    background-color: gold;
+    margin: 6px 0;
+}
+
+.main-content {
     padding-bottom: 100px;
 }
 
@@ -51,42 +156,139 @@ body {
     cursor: pointer;
 }
 
-/* Header et navigation */
-header {
-    background-color: #007BFF;
-    color: white;
-    padding: 20px 0;
-    display: flex;
-    justify-content: space-evenly;
-    margin-bottom: 20px; /* Ajout d'une marge sous le header */
+/* Styles du header et de la navigation */
+nav {
+    margin: 27px auto 0;
+    position: relative;
+    width: 580px;
+    height: 50px;
+    background-color: white;
+    border-radius: 7px;
+    font-size: 0;
+    margin-bottom: 30px;
+    box-shadow: 0 0px 20px rgba(0,0,0,0.2);
 }
 
-button, .button { /* Utilisez la classe .button pour les styles communs */
-    padding: 10px 20px;
-    margin: 0 10px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
+nav a {
+    line-height: 50px;
+    height: 100%;
+    font-size: 15px;
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    color: black;
     cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    text-decoration: none; /* Supprime le soulignement des liens */
-    display: inline-block; /* Garantit que le lien agit comme un bouton */
+
 }
 
-.red-button {
-    background-color: #dc3545;
+nav .animation {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    z-index: 0;
+    transition: all .5s ease 0s;
+    border-radius: 8px;
+
+}
+
+
+nav a{
+    padding-left:10px;
+    padding-right:10px;
+}
+nav a:nth-child(1) {
+    width: 110px;
+}
+
+nav a:nth-child(2) {
+    width: 110px;
+
+}
+
+nav a:nth-child(3) {
+    width: 110px;
+}
+
+nav a:nth-child(4) {
+    width: 160px;
+}
+
+nav a:nth-child(5) {
+    width: 120px;
+}
+
+nav .start-home, nav a:nth-child(1):hover ~ .animation {
+    width: 130px;
+    left: 0;
+    background-color: #FFC108;
+}
+
+nav .start-diagram, nav a:nth-child(2):hover ~ .animation {
+    width: 130px;
+    left: 130px;
+    background-color: #FF084B;
+}
+
+nav .start-indicators, nav a:nth-child(3):hover ~ .animation {
+    width: 130px;
+    left: 260px;
+    background-color: #6B0AB8;
+}
+
+nav .start-dashboard, nav a:nth-child(4):hover ~ .animation {
+    width: 190px;
+    left: 390px;
+    background-color: #42009E;
+}
+
+
+
+button{ /* Utilisez la classe .button pour les styles communs */
+                   display: inline-block;
+                outline: 0;
+                cursor: pointer;
+                border: none;
+                padding: 0 56px;
+                height: 45px;
+                line-height: 45px;
+                border-radius: 7px;
+                font-weight: 400;
+                font-size: 16px;
+                background: #fff;
+                color: #696969;
+		        margin: 0 10px;
+                box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
+                transition: background 0.2s ease,color 0.2s ease,box-shadow 0.2s ease;
+                :hover{
+                    background: rgba(255,255,255,0.9);
+                    box-shadow: 0 6px 20px rgb(93 93 93 / 23%);
+                }
+
 }
 
 /* Styles du tableau */
-table {
-    width: 80%; /* Largeur du tableau */
-    margin: 0 auto; /* Centrer le tableau horizontalement */
-    border-collapse: collapse;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
+/* Styles du tableau */
+.table-responsive {
+    overflow-x: auto; /* Ajout du défilement horizontal */
+    margin-right:20px;
+    margin-left:20px;
 }
 
-table thead{
+table {
+
+    margin: 0 auto; /* Centrer le tableau horizontalement */
+
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du tableau */
+    font-size: 12px; /* Réduction de la taille de la police */
+}
+
+
+
+table thead {
     font-weight: bold;
 }
 
@@ -94,11 +296,17 @@ th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+
+    white-space: discard; /* Empêche le texte de s'étendre sur plusieurs lignes */
 }
 
 th {
+    width:60px;
     background-color: #f8f8f8;
 }
+
+
+
 
 /* Footer avec les contrôles */
 footer {
@@ -160,12 +368,27 @@ footer {
     display: none; /* Masqué par défaut */
 }
 
+
+
+/* Conteneur général pour la mise en page */
 .graph-container {
-    margin: 60px auto; /* Ajoute de l'espace autour du container et le centre */
-    max-width: 90%; /* Limite la largeur maximale du container */
-    border-radius: 15px; /* Arrondit les coins */
-    padding: 20px; /* Ajoute de l'espace à l'intérieur du container */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center; /* Centre l'image horizontalement */
+    align-items: center; /* Centre l'image verticalement si nécessaire */
+    width: 100%; /* Assure que le conteneur prend toute la largeur disponible */
+    max-width: 100%; /* Empêche le conteneur de dépasser 100% de la largeur */
+    margin: 0 auto; /* Centre le conteneur au milieu de la page */
+    flex-direction: column; /* Dispose les éléments en colonne */
+    padding: 20px; /* Ajoute un peu de padding autour du conteneur */
+}
+
+/* Styles pour l'image pour la rendre responsive */
+#graph-img {
+    width: 100%; /* L'image prend toute la largeur du conteneur parent */
+    max-width: 800px; /* Largeur maximale de l'image */
+    height: auto; /* La hauteur est automatiquement ajustée pour maintenir les proportions */
+    display: block; /* Supprime l'espace sous l'image */
+    margin: 0 auto; /* Centre l'image horizontalement */
 }
 
 .grid-container {

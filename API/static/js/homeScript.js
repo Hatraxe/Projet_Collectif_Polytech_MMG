@@ -1,7 +1,7 @@
 // Pour la modale d'importation
 var importModal = document.getElementById('myModal');
 var importBtn = document.getElementById('importButton');
-var closeImport = document.getElementsByClassName('close')[0];
+var closeImport = document.getElementsByClassName('closeImport')[0];
 
 importBtn.onclick = function() {
     importModal.style.display = 'block';
@@ -73,3 +73,19 @@ exportDataButton.onclick = function() {
     }, 1500); // Disparaît après 3 secondes
 };
 
+var sidenav = document.getElementById("mySidenav");
+var openBtn = document.getElementById("openBtn");
+var closeBtn = document.getElementById("closeBtn");
+
+openBtn.onclick = openNav;
+closeBtn.onclick = closeNav;
+
+/* Set the width of the side navigation to 250px */
+function openNav() {
+  sidenav.classList.add("active");
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+  sidenav.classList.remove("active");
+}

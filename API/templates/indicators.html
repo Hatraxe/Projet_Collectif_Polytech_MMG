@@ -9,12 +9,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <header>
-        <a href="/home/" class="button">Données</a>
-        <a href="/graphiques/" class="button">Graphiques</a>
-        <a href="/indicators/" class="button">Indicateurs</a>
-        <a href="/dashboard/" class="button">Tableau de bord</a>
-    </header>
+    <nav>
+
+    <a href="/home/" >Données</a>
+    <a href="/graphiques/" >Graphiques</a>
+    <a href="/indicators/" >Indicateurs</a>
+    <a href="/dashboard/" >Tableau de bord</a>
+    <div class="animation start-indicators"></div>
+
+</nav>
     <div class="main-content">
         <div id="popupAddIndicatorsToDashboard" class="popup">Données ajoutées au tableau de bord avec succès !</div>
         <div id="popupGenerateIndicators" class="popup">Données générées avec succès !</div>
@@ -24,9 +27,9 @@
     </div>
     <footer>
         <div class="controls">
-            <label for="startDate">Start Date:</label>
+            <label for="startDate">Date de début:</label>
             <input type="date" id="startDate">
-            <label for="endDate">End Date:</label>
+            <label for="endDate">Date de fin:</label>
             <input type="date" id="endDate">
             <label>
                 <select class="choice-box", id="choiceBox">
@@ -44,20 +47,6 @@
 
             <button id="addIndicatorsToDashboard" class="button">Ajouter au tableau de bord</button>
 
-            <button id="exportIndicatorsButton" class="button">Exporter</button>
-
-            <div id="exportIndicatorsModal" class="modal">
-                <div class="modal-content">
-                    <span class="closeIndicators">&times;</span>
-                    <h2>Exporter des données</h2>
-                    <p>Choisissez le format de fichier :</p>
-                    <select id="fileFormatSelector">
-                        <option value="excel">Excel</option>
-                        <option value="csv">CSV</option>
-                    </select>
-                    <button onclick="startExport()">Exporter Maintenant</button>
-                </div>
-            </div>
 
         </div>
     </footer>
