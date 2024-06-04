@@ -4,11 +4,9 @@ import pandas as pd
 
 
 def csv_to_sqlite(data):
-    # data = clear_csv(data)
     database = sqlite3.connect("db.sqlite")
     data.to_sql('csv_data', database, if_exists='replace', index=False)
     database.close()
-    # return data
 
 
 
