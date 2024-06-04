@@ -27,11 +27,14 @@ def home(request):
     if request.method == 'POST':
         # handle delete button
         if request.POST.get("delete") == "true":
-            conn = sqlite3.connect("db.sqlite")
-            cur = conn.cursor()
-            cur.execute("DROP TABLE IF EXISTS csv_data")
-            cur.execute("CREATE TABLE IF NOT EXISTS csv_data(temp integer);")
-            conn.close()
+            try:
+                conn = sqlite3.connect("db.sqlite")
+                cur = conn.cursor()
+                cur.execute("DROP TABLE IF EXISTS csv_data")
+                cur.execute("CREATE TABLE IF NOT EXISTS csv_data(temp integer);")
+                conn.close()
+            except OSError as e:
+                print(e)
             data = []
 
         #handle export button
@@ -78,7 +81,7 @@ def home(request):
             except Exception as e:
                 print(format(e))
                 data = []
-    if len(data) == 0:
+    if len(data) == 0: #if data not empty
         return render(request, 'home.html', {'rm_list': import_csv.words_to_remove()})
     else:
         return render(request, 'home.html', {'data': data, 'rm_list': import_csv.words_to_remove()})
@@ -179,7 +182,7 @@ def generate_graph_age(request):
     #FR: Calculer l'âge de chaque personne
     today_str = datetime.today().strftime('%d%m%y')
     today = pd.to_datetime(today_str, format='%d%m%y')
-    df['Date de naissance'] = pd.to_datetime(df['Date de naissance'], format='%d/%m/%Y')
+    df['Date de naissance'] = pd.to_datetime(df['Date de naissance'], format='%d/%m/%Y', errors='coerce')
     df['Age'] = df['Date de naissance'].apply(lambda x: today.year - x.year - ((today.month, today.day) < (x.month, x.day)))
     df['Date de début'] = pd.to_datetime(df['Date de début'], format='%d/%m/%Y')
     
