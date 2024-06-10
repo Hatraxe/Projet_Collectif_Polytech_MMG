@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% load static %}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Données</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{#    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />#}
+{#    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>#}
+{#    <py-env> - pandas </py-env>#}
+</head>
+<body>
+<nav>
+
+    <a href="/home/" >Données</a>
+    <a href="/graphiques/" >Graphiques</a>
+    <a href="/indicators/" >Indicateurs</a>
+    <a href="/dashboard/" >Tableau de bord</a>
+    <div class="animation start-home"></div>
+
+</nav>
+
+<div class="main-content">
+    <div id="popupImportData" class="popup">Importation des données !</div>
+    <div id="popupDeleteData" class="popup">Suppression des données !</div>
+    <div id="popupExportData" class="popup">Export des données !</div>
+    <div class="main-view">
+    <div class="table-responsive">
+
+        <table>
+        <thead>
+            <tr>
+                {% for col in data.columns %}
+                    <td>
+                        {{col}}
+                    </td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for index, row in data.iterrows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>
+                            {{cell}}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        <tbody>
+        </table>
+    </div>
+        <div id="mySidenav" class="sidenav">
+    <a id="closeBtn" href="#" class="close">×</a>
+    <form action="/home/" method="post">
+    <div class="input-container">
+        {% csrf_token %}
+        <input type="text" id="remove" name="remove_word" value="true" style="display: none">
+        {% for rm in rm_list %}
+
+                <input type="text" id="word{{ forloop.counter }}" name="item{{ forloop.counter }}" value="{{ rm }}" class="form__input">
+
+        {% endfor %}
+
+            <input type="text" id="add_word" name="add_word" value="" class="form__input">
+        </div>
+        <button type="submit" class="addWordButton">Ajouter les mots</button>
+    </form>
+</div>
+
+
+    </div>
+
+{#    <py-script>#}
+{#import pandas as pd#}
+{##}
+{#columns = ['age', 'week', 'opp', 'ACscr', 'OPPscr', 'location']#}
+{#df = pd.read_csv('Crushers.csv', names=columns)#}
+{##}
+{## This you can change it to whatever you want to get#}
+{#age_15 = df[df['age'] == 'U15']#}
+{## Other examples:#}
+{#bye = df[df['opp'] == 'Bye']#}
+{#crushed_team = df[df['ACscr'] == '0']#}
+{#crushed_visitor = df[df['OPPscr'] == '0']#}
+{## Play with this#}
+{##}
+{## Use the .to_html() to get your table in html#}
+{#print(crushed_visitor.to_html())#}
+{#    </py-script>#}
+</div>
+<footer>
+    <div class="footer-import">
+        <button href="#" id="openBtn" class="button" >Filtrer</button>
+        <button id="importButton" class="button" >Importer</button>
+        <form action="/home/" method="POST">
+            {% csrf_token %}
+            <input type="text" id="delete" name="delete" value="true" style="display: none">
+            <button id="deleteDataButton" class="button" type="submit">Supprimer</button>
+        </form>
+        <button id="exportButton" class="button">Exporter</button>
+    </div>
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <span class="closeExport">&times</span>
+            <h2>Exporter des données</h2>
+            <p>Choisissez le format de fichier :</p>
+            <label for="fileFormatSelector"></label><select id="fileFormatSelector">
+                <option value="excel">Excel</option>
+                <option value="csv">CSV</option>
+            </select>
+            <form action="/home/" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" id="export_home" name="export_home" value="true" style="display: none">
+                <button id="exportDataButton" class="button" type="submit">Exporter Maintenant</button>
+            </form>
+        </div>
+
+    </div>
+    <div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="closeImport">&times</span>
+        <h2>Importer un fichier</h2>
+
+        <!-- Formulaire d'importation de fichier -->
+        <form action="/home/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file" id="file" accept=".csv" required>
+{#            <input type="test" name="test" id="test" required>#}
+            <button id="importDataButton" type="submit">Importer</button>
+        </form>
+    </div>
+    </div>
+
+
+</footer>
+
+<script src="{% static 'js/homeScript.js' %}"></script>
+</body>
+</html>

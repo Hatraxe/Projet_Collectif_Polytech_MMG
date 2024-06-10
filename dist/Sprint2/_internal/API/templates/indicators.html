@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+    {% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicateurs</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <a href="/home/" class="button">Données</a>
+        <a href="/graphiques/" class="button">Graphiques</a>
+        <a href="/indicators/" class="button">Indicateurs</a>
+        <a href="/dashboard/" class="button">Tableau de bord</a>
+    </header>
+    <div class="main-content">
+        <div id="popupAddIndicatorsToDashboard" class="popup">Données ajoutées au tableau de bord avec succès !</div>
+        <div id="popupGenerateIndicators" class="popup">Données générées avec succès !</div>
+    </div>
+    <div id="indicator-container">
+        <!-- HTML table will be inserted here -->
+    </div>
+    <footer>
+        <div class="controls">
+            <label>
+                <select class="choice-box", id="choiceBox">
+                    <option value="shifts">Vacations</option>
+                    <option value="RDV">RDV</option>
+                    <option value="RDVHonored">RDV honorés</option>
+                    <option value="distribution">Répartition de prise de RDV</option>
+                    <option value="statut">Statut</option>
+                    <option value="madecovered">RDV pris / RDV couverts</option>
+                </select>
+            </label>
+            <button id="generateIndicatorsButton" class="button">Générer</button>
+
+            <button id="addIndicatorsToDashboard" class="button">Ajouter au tableau de bord</button>
+
+            <button id="exportIndicatorsButton" class="button">Exporter</button>
+
+            <div id="exportIndicatorsModal" class="modal">
+                <div class="modal-content">
+                    <span class="closeIndicators">&times;</span>
+                    <h2>Exporter des données</h2>
+                    <p>Choisissez le format de fichier :</p>
+                    <select id="fileFormatSelector">
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                    <button onclick="startExport()">Exporter Maintenant</button>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+<script src="{% static 'js/indicatorsScript.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#generateIndicatorsButton').click(function() {
+            if ($('#choiceBox').val() === 'shifts') {
+                $.get('/generate-indicator-shifts/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'RDV') {
+                $.get('/generate-indicator-RDV/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'RDVHonored') {
+                $.get('/generate-indicator-RDV-honored/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'distribution') {
+                $.get('/generate-indicator-distribution-of-RDV/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'statut') {
+                $.get('/generate-indicator-statut/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            } else if ($('#choiceBox').val() === 'madecovered') {
+                $.get('/generate-indicator-RDV-made-covered/', function(data) {
+                    $('#indicator-container').html(data); // Set the HTML content of the container
+                    $('#indicator-container').show();
+                });
+            }
+            else {
+                console.log("Option not selected.");
+            }
+        });
+    });
+</script>
+</body>
+</html>
